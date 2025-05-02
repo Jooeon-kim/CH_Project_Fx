@@ -137,7 +137,7 @@ public class BookDAO {
     }
     public List<Book> getAllBooksFromDB() {
         List<Book> books = new ArrayList<>();
-        String sql = "SELECT * FROM books";  // 책 테이블에서 모든 책을 가져오는 쿼리
+        String sql = "SELECT * FROM book";  // 책 테이블에서 모든 책을 가져오는 쿼리
 
         try (Connection conn = DBConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -156,7 +156,8 @@ public class BookDAO {
                 String publisher = rs.getString("publisher");
                 int price = rs.getInt("price");
                 String imgPath = rs.getString("imgPath");
-
+                System.out.println("imgPath from DB: " + imgPath);
+                System.out.println("getResource result: " + getClass().getResource(imgPath));
                 // Book 객체 생성하여 리스트에 추가
                 Book book = new Book(isbn, title, date, author, description, category, publishDate, amount, publisher, price, imgPath);
                 books.add(book);
