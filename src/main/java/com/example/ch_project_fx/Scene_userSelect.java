@@ -56,6 +56,10 @@ public class Scene_userSelect {
         gridPane.setAlignment(Pos.CENTER);
 
         VBox miniGameBox = createMenuCard("/img/minigame.png", "미니게임");
+        miniGameBox.setOnMousePressed(e->{
+            Scene_Minigame SM = new Scene_Minigame();
+            SM.SelectGame();
+        });
         VBox libraryBox = createMenuCard("/img/library.png", "책 대여");
         VBox marketBox = createMenuCard("/img/bookmarket.png", "온라인 서점");
 
@@ -87,14 +91,6 @@ public class Scene_userSelect {
         box.setOnMouseEntered(e -> box.setStyle("-fx-background-color: #e0f7fa; -fx-border-color: #00796b; -fx-border-radius: 10; -fx-background-radius: 10;"));
         box.setOnMouseExited(e -> box.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #cccccc; -fx-border-radius: 10; -fx-background-radius: 10;"));
 
-        switch(title.getText()){
-            case "미니게임":
-                break;
-            case "책 대여":
-                break;
-            case "온라인 서점":
-                break;
-        }
 
         return box;
     }

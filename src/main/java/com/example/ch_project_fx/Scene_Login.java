@@ -54,7 +54,6 @@ public class Scene_Login {
                 alert.showAndWait();
                 Scene_userSelect scene1 = new Scene_userSelect();
                 CH_Application.getInstance().stage.setScene(scene1.getUserSelectScene());
-                CH_Application.getInstance().stage.show();
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setGraphic(null);
@@ -78,7 +77,6 @@ public class Scene_Login {
                 alert.showAndWait();
                 Scene_userSelect scene1 = new Scene_userSelect();
                 CH_Application.getInstance().stage.setScene(scene1.getUserSelectScene());
-                CH_Application.getInstance().stage.show();
 
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
