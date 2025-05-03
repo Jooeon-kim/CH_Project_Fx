@@ -83,55 +83,77 @@ public class Scene_Minigame {
         Scene SelectGameScene = new Scene(main);
         CH_Application.getInstance().stage.setScene(SelectGameScene);
     }
-    void BlackJack(){
+    void BlackJack() {
+        // 스타일 공통 설정
+        String labelStyle = "-fx-font-size: 16px; -fx-font-weight: bold;";
+        String buttonStyle = "-fx-background-color: #4CAF50; -fx-text-fill: white;";
+        String buttonHover = "-fx-background-color: #45a049;";
+        String textFieldStyle = "-fx-font-size: 14px; -fx-border-color: #666; -fx-border-radius: 5px; -fx-padding: 5px;";
+        String vboxStyle = "-fx-alignment: center; -fx-spacing: 15px;";
+        String hboxStyle = "-fx-alignment: center; -fx-spacing: 20px;";
+
+        // 메인 레이아웃
         VBox BlackJackMain = new VBox(20);
         BlackJackMain.setAlignment(Pos.CENTER);
-        BlackJackMain.setStyle(
-                "-fx-background-color: green;" +
-                        "-fx-border-color: black;" +
-                        "-fx-border-width: 5px;" +
-                        "-fx-border-radius: 20px;" +
-                        "-fx-background-radius: 40px;"
-        );
+        BlackJackMain.setStyle("-fx-background-color: green; -fx-border-color: black; -fx-border-width: 5px; -fx-border-radius: 20px; -fx-background-radius: 40px;");
+
         this.deck = new Deck();
         this.cards = deck.cards;
         startBlackJack();
 
+        // 상단 정보
         HBox head = new HBox(20);
         head.setAlignment(Pos.CENTER);
-        Label userName = new Label("이름:"+this.currentUser.getName());
-        Label userId = new Label("아이디:" +this.currentUser.getId());
-        Label userMoney = new Label("보유 포인트: "+this.currentUser.getPoint()+" ");
-        head.getChildren().addAll(userId,userName,userMoney);
-        HBox middle = new HBox(20);
-        middle.setAlignment(Pos.CENTER);
-        VBox userScore = new VBox(20);
-        this.computerScoreLabel.setText("딜러 점수 : ???");
-        this.userScoreLabel.setText(this.currentUser.getName()+"님의 점수: ");
-        userScore.getChildren().addAll(computerScoreLabel,userScoreLabel);
+        head.setStyle(hboxStyle);
+        Label userName = new Label("이름: " + this.currentUser.getName());
+        Label userId = new Label("아이디: " + this.currentUser.getId());
+        Label userMoney = new Label("보유 포인트: " + this.currentUser.getPoint());
+        userName.setStyle(labelStyle);
+        userId.setStyle(labelStyle);
+        userMoney.setStyle(labelStyle);
+        head.getChildren().addAll(userId, userName, userMoney);
 
-        VBox buttons = new VBox();
+        // 중간 부분 - 점수
+        VBox userScore = new VBox(20);
+        userScore.setStyle(vboxStyle);
+        this.computerScoreLabel.setText("딜러 점수 : ???");
+        this.userScoreLabel.setText(this.currentUser.getName() + "님의 점수: ");
+        computerScoreLabel.setStyle(labelStyle);
+        userScoreLabel.setStyle(labelStyle);
+        userScore.getChildren().addAll(computerScoreLabel, userScoreLabel);
+
+        // 게임 버튼들
         Button hit = new Button("Hit");
-        hit.setOnMouseClicked(e->{
+        hit.setStyle(buttonStyle);
+        hit.setOnMouseEntered(e -> hit.setStyle(buttonHover));
+        hit.setOnMouseExited(e -> hit.setStyle(buttonStyle));
+        hit.setOnMouseClicked(e -> {
             this.userCards.add(drawCard());
             updateUserDeck();
-            if(this.userTotalPoint >21)
-                result();
+            if (this.userTotalPoint > 21) result();
         });
+
         Button doubleDown = new Button("Double Down");
-        doubleDown.setOnMouseClicked(e->{
+        doubleDown.setStyle(buttonStyle);
+        doubleDown.setOnMouseEntered(e -> doubleDown.setStyle(buttonHover));
+        doubleDown.setOnMouseExited(e -> doubleDown.setStyle(buttonStyle));
+        doubleDown.setOnMouseClicked(e -> {
             this.userCards.add(drawCard());
             this.userCards.add(drawCard());
             updateUserDeck();
-            while(this.computerTotalPoint<17){
-                this.count=2;
+            while (this.computerTotalPoint < 17) {
+                this.count = 2;
                 this.computerCards.add(drawCard());
                 updateComputerDeck();
             }
             result();
         });
+
         Button split = new Button("Split");
-        split.setOnMouseClicked(e->{
+        split.setStyle(buttonStyle);
+        split.setOnMouseEntered(e -> split.setStyle(buttonHover));
+        split.setOnMouseExited(e -> split.setStyle(buttonStyle));
+        split.setOnMouseClicked(e -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.initOwner(this.stage);
             alert.setTitle("split");
@@ -141,11 +163,11 @@ public class Scene_Minigame {
             smallStage.initModality(Modality.WINDOW_MODAL);
             smallStage.initOwner(this.stage);
             HBox all = new HBox(20);
-            for(Card c : this.userCards){
+            for (Card c : this.userCards) {
                 ImageView img = new ImageView(c.img);
                 img.setFitHeight(200);
                 img.setPreserveRatio(true);
-                img.setOnMousePressed(u->{
+                img.setOnMousePressed(u -> {
                     this.SplitCard = c;
                     this.userCards.remove(c);
                     updateUserDeck();
@@ -154,104 +176,94 @@ public class Scene_Minigame {
                 all.getChildren().add(img);
             }
             split.setDisable(true);
-            Scene scene = new Scene(all,400,300);
+            Scene scene = new Scene(all, 400, 300);
             smallStage.setScene(scene);
             smallStage.show();
 
             this.userCards.add(drawCard());
-
         });
+
         Button stand = new Button("Stand");
-        stand.setOnMouseClicked(e->{
-            while(getPointComputer()<17) {
+        stand.setStyle(buttonStyle);
+        stand.setOnMouseEntered(e -> stand.setStyle(buttonHover));
+        stand.setOnMouseExited(e -> stand.setStyle(buttonStyle));
+        stand.setOnMouseClicked(e -> {
+            while (getPointComputer() < 17) {
                 computerCards.add(drawCard());
                 updateComputerDeck();
-
             }
             result();
         });
 
-        buttons.getChildren().addAll(hit,doubleDown,split,stand);
+        VBox buttons = new VBox(20);
+        buttons.setStyle(vboxStyle);
+        buttons.getChildren().addAll(hit, doubleDown, split, stand);
 
-        middle.getChildren().addAll(userScore,buttons);
+        // 중간 레이아웃
+        HBox middle = new HBox(20);
+        middle.setAlignment(Pos.CENTER);
+        middle.setStyle(hboxStyle);
+        middle.getChildren().addAll(userScore, buttons);
 
+        // 블랙잭 메인에 추가
+        BlackJackMain.getChildren().addAll(head, this.computerDeck, middle, this.userDeck);
 
-
-
-
-        BlackJackMain.getChildren().addAll(head,this.computerDeck,middle,this.userDeck);
-
-
-        Scene BlackJack = new Scene(BlackJackMain);
-        this.currentScene = BlackJack;
-        if(this.currentUser.getPoint()<=0) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.initOwner(this.stage);
-            alert.setTitle("포인트가 없네?");
-            alert.setContentText("아쉽네요 ㅠㅠ 더 독서하고와요");
-            alert.showAndWait();
-            Scene_Login SL = new Scene_Login();
-            SL.Login();
-        }
+        // 배팅 창
         Stage smallStage = new Stage();
         smallStage.initModality(Modality.WINDOW_MODAL);
         smallStage.initOwner(stage);
 
-
         VBox small = new VBox(20);
-        small.setAlignment(Pos.CENTER);
+        small.setStyle(vboxStyle);
         VBox vipBox = new VBox(20);
         VBox vipSet = new VBox(20);
 
         Label inputBet = new Label("배팅할 금액을 입력하세요");
-        inputBet.setAlignment(Pos.CENTER);
-        Label userMoneyInfo = new Label(String.valueOf(this.currentUser.getName()+ " 보유 money: "+this.currentUser.getPoint()));
-        userMoneyInfo.setAlignment(Pos.CENTER);
+        inputBet.setStyle(labelStyle);
+        Label userMoneyInfo = new Label(this.currentUser.getName() + " 보유 money: " + this.currentUser.getPoint());
+        userMoneyInfo.setStyle(labelStyle);
         TextField textFieldBet = new TextField();
+        textFieldBet.setStyle(textFieldStyle);
         textFieldBet.setAlignment(Pos.CENTER);
 
-        textFieldBet.setOnAction(a->{
-            if(this.currentUser.getPoint()<Integer.parseInt(textFieldBet.getText())){
+        textFieldBet.setOnAction(a -> {
+            if (this.currentUser.getPoint() < Integer.parseInt(textFieldBet.getText())) {
                 vipSet.getChildren().clear();
                 Label sayNo = new Label("배팅 포인트가 부족합니다");
                 vipSet.getChildren().add(sayNo);
-            }
-            else{
+            } else {
                 vipSet.getChildren().clear();
                 this.BetAmount = Integer.parseInt(textFieldBet.getText());
-                this.currentUser.setPoint(this.currentUser.getPoint()-this.BetAmount);
+                this.currentUser.setPoint(this.currentUser.getPoint() - this.BetAmount);
                 UserDAO UD = new UserDAO();
-                UD.subtractPointFromUser(this.currentUser.getId(),this.BetAmount);
+                UD.subtractPointFromUser(this.currentUser.getId(), this.BetAmount);
                 smallStage.close();
-                if(this.SplitCard==null) {
+                if (this.SplitCard == null) {
                     this.userCards.add(drawCard());
                     this.userCards.add(drawCard());
                     updateUserDeck();
-                }else{
+                } else {
                     this.userCards.add(SplitCard);
                     this.userCards.add(drawCard());
-                    this.SplitCard=null;
+                    this.SplitCard = null;
                     updateUserDeck();
                 }
                 this.computerCards.add(drawCard());
                 this.computerCards.add(drawCard());
                 updateComputerDeck();
-                stage.setScene(BlackJack);
+                stage.setScene(new Scene(BlackJackMain));
             }
         });
 
-        vipBox.getChildren().addAll(inputBet,userMoneyInfo, textFieldBet);
+        vipBox.getChildren().addAll(inputBet, userMoneyInfo, textFieldBet);
 
-        small.getChildren().addAll(vipBox,vipSet);
+        small.getChildren().addAll(vipBox, vipSet);
 
         Scene smallScene = new Scene(small, 400, 300);
-
 
         smallStage.setScene(smallScene);
         smallStage.setTitle("배팅 금액");
         smallStage.show();
-
-
     }
     void startBlackJack(){
         ImageView unknownCard = new ImageView(deck.unknown.img);
