@@ -22,7 +22,7 @@ public class CH_Application extends Application {
         Scene_Login sceneLogin = new Scene_Login();
         sceneLogin.Login();
         stage.setWidth(800);
-        stage.setHeight(900);
+        stage.setHeight(1000);
         stage.setResizable(false);
         stage.setScene(this.currentScene);
         stage.setTitle("창현씨...");

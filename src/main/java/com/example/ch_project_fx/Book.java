@@ -2,6 +2,8 @@ package com.example.ch_project_fx;
 
 import javafx.scene.image.Image;
 
+import java.util.Objects;
+
 public class Book {
     String isbn;
     String title;
@@ -28,9 +30,13 @@ public class Book {
         this.publisher = publisher;
         this.price = price;
         this.imgPath = imgPath;
-        this.image = new Image(getClass().getResource(imgPath).toExternalForm());
+        this.image = new Image(Objects.requireNonNull(getClass().getResource(imgPath)).toExternalForm());
     }
-
+    public Book CopyBookForCart(Book b){
+        Book newBook = new Book(b.getIsbn(),b.title,b.getDate(),b.getAuthor(),b.getDescription(),b.getCategory(),b.getPublishDate(),b.getAmount(),b.getPublisher(),b.getPrice(),b.getImgPath());
+        newBook.amount = 1;
+        return newBook;
+    }
     public String getIsbn() {
         return isbn;
     }

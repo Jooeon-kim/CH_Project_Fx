@@ -3,6 +3,7 @@ package com.example.ch_project_fx;
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class User {
@@ -16,8 +17,19 @@ public class User {
     private int point;
     private String grade;
     private int totalPayed;
-    private ArrayList<Product> buyList = new ArrayList<>();
-    private ArrayList<Product> borrowList = new ArrayList<>();
+    private ArrayList<Book> buyList = new ArrayList<>();
+    private ArrayList<Book> borrowList = new ArrayList<>();
+    private List<Coupon> coupons = new ArrayList<>();
+    private ArrayList <Book> allBuyList = new ArrayList<>();
+
+
+    public List<Coupon> getCoupons() {
+        return coupons;
+    }
+
+    public void setCoupons(List<Coupon> coupons) {
+        this.coupons = coupons;
+    }
 
     public String getId() {
         return id;
@@ -59,11 +71,11 @@ public class User {
         return totalPayed;
     }
 
-    public ArrayList<Product> getBuyList() {
+    public ArrayList<Book> getBuyList() {
         return buyList;
     }
 
-    public ArrayList<Product> getBorrowList() {
+    public ArrayList<Book> getBorrowList() {
         return borrowList;
     }
 
@@ -107,11 +119,11 @@ public class User {
         this.totalPayed = totalPayed;
     }
 
-    public void setBuyList(ArrayList<Product> buyList) {
+    public void setBuyList(ArrayList<Book> buyList) {
         this.buyList = buyList;
     }
 
-    public void setBorrowList(ArrayList<Product> borrowList) {
+    public void setBorrowList(ArrayList<Book> borrowList) {
         this.borrowList = borrowList;
     }
 }

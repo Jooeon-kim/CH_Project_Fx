@@ -7,21 +7,24 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 public class Scene_userInfo {
 
     public Scene getUserInfoScene(User user) {
-        VBox root = new VBox(20);  // root를 VBox로 다시 설정
-        root.setPadding(new Insets(30));
-        root.setAlignment(Pos.TOP_CENTER);
-        root.setStyle("-fx-background-color: #ffffff;");
-
+        VBox userInfoRoot  = new VBox(20);  // root를 VBox로 다시 설정
+        userInfoRoot .setPadding(new Insets(30));
+        userInfoRoot .setAlignment(Pos.TOP_CENTER);
+        userInfoRoot.getStyleClass().add("root");
         // 로고 상단 중앙
         ImageView logo = new ImageView(new Image(getClass().getResource("/img/logo.png").toExternalForm()));
         logo.setFitHeight(80);
@@ -55,21 +58,29 @@ public class Scene_userInfo {
         userInfoBox.getChildren().add(createLabel("주소 :"+user.getAddress(), labelFont));
 
         userInfoBox.getChildren().add(createLabel("총 구매금액 :"+user.getTotalPayed()+" 원", labelFont));
-
+        if(!user.getCoupons().isEmpty()){
+            userInfoBox.getChildren().add(createLabel("보유 쿠폰 👇🏻",labelFont));
+            for(Coupon c : user.getCoupons()){
+                userInfoBox.getChildren().add(createLabel(c.getName(),labelFont));
+            }
+        }
 
 
         // 수정 필드 영역 (초기엔 숨김)
         VBox editBox = new VBox(10);
         editBox.setAlignment(Pos.CENTER_LEFT);
         editBox.setPadding(new Insets(20, 0, 0, 0));
-
+        editBox.getStyleClass().add("user-info-container");
         TextField phoneField = new TextField(user.getPhone());
         TextField addressField = new TextField(user.getAddress());
         PasswordField pwField = new PasswordField();
+        phoneField.getStyleClass().add("text-field");
+        addressField.getStyleClass().add("text-field");
+        pwField.getStyleClass().add("text-field");
         pwField.setPromptText("새 비밀번호 입력");
 
         Button confirmButton = new Button("확인");
-        confirmButton.setStyle("-fx-background-color: #66cc66; -fx-text-fill: white;");
+        confirmButton.getStyleClass().add("button-green");
 
         confirmButton.setOnAction(e -> {
             // 유저 정보 업데이트
@@ -96,36 +107,100 @@ public class Scene_userInfo {
                 new Label("비밀번호:"), pwField,
                 confirmButton
         );
+
         editBox.setVisible(false);
         // 회원정보수정 버튼과 뒤로가기 버튼
         HBox buttonBox = new HBox(10);
         Button editButton = new Button("회원정보수정");
+        editButton.getStyleClass().add("button-blue");
         editButton.setPrefWidth(150);
         editButton.setOnAction(e -> editBox.setVisible(true));
         editButton.setStyle("-fx-background-color: #3399ff; -fx-text-fill: white; -fx-font-weight: bold;");
 
+        Button showPurchaseList = new Button("구매목록");
+        showPurchaseList.setPrefWidth(150);
+        showPurchaseList.setStyle("-fx-background-color: #3399ff; -fx-text-fill: white; -fx-font-weight: bold;");
+        showPurchaseList.setOnMousePressed(e->{
+            PurchaseDAO PD = new PurchaseDAO();
+            List <Book> books = PD.getUserPurchaseHistory(user.getId());
+            if(books.isEmpty()){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setGraphic(null);
+                alert.setContentText("구매내역이 없습니다");
+                alert.showAndWait();
+            }else{
+                VBox buyList = new VBox(10);
+                buyList.setStyle("-fx-background-color: #f4f4f4;");
+                Label titleLabel = new Label("📚 구매 내역");
+                titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+                titleLabel.setTextFill(Color.DARKBLUE);
+                buyList.getChildren().add(titleLabel);
+
+                for(Book b : books){
+                    HBox itemBox = new HBox(10);
+                    itemBox.setPadding(new Insets(5));
+                    itemBox.setAlignment(Pos.CENTER_LEFT);
+
+                    Label bookTitle = new Label("《" + b.getTitle() + "》");
+                    bookTitle.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 14));
+                    bookTitle.setTextFill(Color.BLACK);
+
+                    Label amountLabel = new Label(b.getAmount() + "개");
+                    amountLabel.setFont(Font.font("Arial", FontWeight.NORMAL, 14));
+                    amountLabel.setTextFill(Color.GRAY);
+
+                    itemBox.getChildren().addAll(bookTitle, amountLabel);
+                    buyList.getChildren().add(itemBox);
+                }
+                Button check = new Button("확인");
+                check.setStyle("-fx-background-color: #3399ff; -fx-text-fill: white; -fx-font-weight: bold;");
+                check.setOnMousePressed(u -> {
+                    ((Stage) check.getScene().getWindow()).close();
+                });
+
+                buyList.getChildren().add(check);
+                buyList.setAlignment(Pos.CENTER);
+
+                Scene miniScene = new Scene(buyList,500,400);
+                Stage popUp = new Stage();
+                popUp.setScene(miniScene);
+                popUp.initModality(Modality.APPLICATION_MODAL);
+                popUp.showAndWait();
+
+            }
+        });
+
         Button backButton = new Button("뒤로가기");
         backButton.setPrefWidth(150);
+        backButton.getStyleClass().add("button-red");
         backButton.setStyle("-fx-background-color: #ff6666; -fx-text-fill: white; -fx-font-weight: bold;");
         backButton.setOnMouseClicked(e->{
             Scene_userSelect userSelect= new Scene_userSelect();
             CH_Application.getInstance().stage.setScene(userSelect.getUserSelectScene());
         });
-        buttonBox.getChildren().addAll(editButton, backButton);
+        buttonBox.getChildren().addAll(editButton, backButton,showPurchaseList);
         buttonBox.setAlignment(Pos.CENTER);
 
         // 최종 레이아웃
         HBox contentBox = new HBox(20);
         contentBox.setAlignment(Pos.CENTER_LEFT);
-        contentBox.getChildren().addAll(userImageBox, userInfoBox);
 
-        root.getChildren().addAll(logoBox, contentBox, buttonBox, editBox);
-        return new Scene(root, 800, 700);
+        userImageBox.getStyleClass().add("user-image-box");
+        userInfoBox.getStyleClass().add("user-info-box");
+        contentBox.getChildren().addAll(userImageBox, userInfoBox);
+        contentBox.getStyleClass().add("user-info-container");
+
+        userInfoRoot.getChildren().addAll(logoBox, contentBox, buttonBox, editBox);
+        Scene userInfoScene = new Scene(userInfoRoot);
+        userInfoScene.getStylesheets().add(getClass().getResource("/css/userinfo.css").toExternalForm());
+
+        return userInfoScene;
     }
 
     // 내부 유틸 메소드
     private Label createLabel(String text, Font font) {
         Label label = new Label(text);
+        label.getStyleClass().add("label-info");
         label.setFont(font);
         return label;
     }

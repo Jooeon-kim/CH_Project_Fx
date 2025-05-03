@@ -19,14 +19,16 @@ public class Scene_bookMarket {
     List<Book> bestSeller;
     VBox Menu = new VBox(20);
     HBox Bookinfo = new HBox(20);
-
+    Button cartButton = new Button("장바구니("+CH_Application.getInstance().currentUser.getBuyList().size()+")");
+    Button toCart = new Button("장바구니에 담기");
     void openMarket() {
         this.books = dao.getAllBooksFromDB();
         List<Book> bestSeller = books.stream().sorted(Comparator.comparingInt(Book::getAmount).reversed()) // amount 기준 내림차순
                 .limit(3)
                 .toList();
         this.bestSeller = bestSeller;
-
+        Menu.getStyleClass().add("menu-pane");
+        Bookinfo.getStyleClass().add("book-info-pane");
         for (Book b : this.books) {
             ImageView img = new ImageView(b.getImage());
             img.setPreserveRatio(true);
@@ -51,7 +53,7 @@ public class Scene_bookMarket {
         // 로고 이미지 및 클릭 이벤트
         Image logo = new Image(getClass().getResource("/img/logo.png").toExternalForm());
         ImageView imageViewLogo = new ImageView(logo);
-        imageViewLogo.setFitHeight(50); // 로고 크기 조정
+        imageViewLogo.setFitHeight(60); // 로고 크기 조정
         imageViewLogo.setPreserveRatio(true);
         imageViewLogo.setOnMousePressed(e -> {
             Scene_userSelect su = new Scene_userSelect();
@@ -73,27 +75,49 @@ public class Scene_bookMarket {
         userInfoBox.add(userGradeLabel, 1, 0);
         userInfoBox.add(userIdLabel, 1, 1);
 
+        HBox buttons = new HBox(20);
         // 로그아웃 버튼
         Button logoutButton = new Button("로그아웃");
         logoutButton.setStyle("-fx-background-color: #00796b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-border-radius: 5;");
         logoutButton.setOnAction(e -> {
             // 로그아웃 처리 로직 (예시)
-            System.out.println("로그아웃 되었습니다.");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setGraphic(null);
+            alert.setContentText(CH_Application.getInstance().currentUser.getName()+"님 로그아웃 되었습니다 다음에봐요~!");
+            alert.showAndWait();
+            Scene_Login login = new Scene_Login();
+            login.Login();
+            CH_Application.getInstance().stage.setScene(CH_Application.getInstance().currentScene);
         });
-
+        this.cartButton.setOnMousePressed(e->{
+            if(CH_Application.getInstance().currentUser.getBuyList().isEmpty()){
+                Alert alert  =new Alert(Alert.AlertType.WARNING);
+                alert.setGraphic(null);
+                alert.setContentText("장바구니가 비어있습니다");
+                alert.showAndWait();
+            }else{
+            Scene_Cart SC = new Scene_Cart();
+            SC.userCart();
+            }
+        });
+        this.cartButton.setStyle("-fx-background-color: #00796b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-border-radius: 5;");
         // 유저 정보와 로그아웃 버튼을 한 곳에 배치
         VBox userInfoVBox = new VBox(10);
-        userInfoVBox.getChildren().addAll(userInfoBox, logoutButton);
+        buttons.getChildren().addAll(logoutButton,this.cartButton);
+        userInfoVBox.getChildren().addAll(userInfoBox, buttons);
 
         Image bookMarketLogo = new Image(getClass().getResource("/img/bookmarketlogo.png").toExternalForm());
         ImageView imageView = new ImageView(bookMarketLogo);
-        imageView.setPreserveRatio(true);
-        imageView.setFitHeight(150);
-
+        imageView.setPreserveRatio(false);
+        imageView.setFitHeight(100);
+        imageView.setFitWidth(200);
         // 로고와 유저 정보를 한 줄로 배치
         BorderPane header = new BorderPane();
         header.setPadding(new Insets(10));
-        header.getChildren().addAll(imageViewLogo,imageView, userInfoVBox);
+        header.setLeft(imageViewLogo);
+        header.setCenter(imageView);
+        header.setRight(userInfoVBox);
+
 
         // 베스트셀러 책들
         HBox bestBooks = new HBox(10);
@@ -103,18 +127,16 @@ public class Scene_bookMarket {
         for (int i = 0; i < bestSeller.size(); i++) {
             Book b = bestSeller.get(i);
 
-            // 베스트셀러 1위에 "베스트셀러 1위" 라벨 추가
             HBox element = new HBox(10);
             element.setAlignment(Pos.CENTER_LEFT);
+            element.setMaxWidth(250);
             element.setStyle("-fx-padding: 10; -fx-border-color: #d3d3d3; -fx-border-radius: 5; -fx-background-color: #f9f9f9;");
 
-            // 책 이미지 크기 설정
             ImageView img = new ImageView(b.image);
             img.setFitHeight(90); // 책 이미지 크기 조정
             img.setFitWidth(60);
             img.setPreserveRatio(true);
 
-            // 책 정보 (제목, 저자)
             VBox infoTags = new VBox(5);
             infoTags.getChildren().addAll(new Label(b.title), new Label(b.author));
             infoTags.setAlignment(Pos.CENTER);
@@ -124,9 +146,19 @@ public class Scene_bookMarket {
 
             // 1위 책에 "베스트셀러 1위" 라벨 추가
             if (i == 0) {
-                Label rankLabel = new Label("베스트셀러 1위");
+                Label rankLabel = new Label("베스트셀러 1위!");
+                rankLabel.getStyleClass().add("rank-1");
+
                 rankLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: gold; -fx-font-size: 14px;");
                 infoTags.getChildren().add(0, rankLabel); // 1위 라벨을 맨 앞에 추가
+            }else if(i == 1){
+                Label rankLabel = new Label("베스트셀러 2위");
+                rankLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: silver; -fx-font-size: 14px;");
+                infoTags.getChildren().add(0, rankLabel);
+            }else{
+                Label rankLabel = new Label("베스트셀러 3위");
+                rankLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: brown; -fx-font-size: 14px;");
+                infoTags.getChildren().add(0, rankLabel);
             }
 
             element.getChildren().addAll(img, infoTags);
@@ -136,6 +168,7 @@ public class Scene_bookMarket {
             bestBooks.getChildren().add(element);
         }
         HBox middle = new HBox(20);
+        middle.setPadding(new Insets(20));
         ChoiceBox<String> category = new ChoiceBox<>();
         category.getItems().addAll("전부", "제목", "저자", "출판사", "카테고리");
         category.setValue("전부");
@@ -267,14 +300,22 @@ public class Scene_bookMarket {
         // 전체 레이아웃에 로고, 유저 정보, 베스트셀러 책 추가
         HBox ButtonBox = new HBox(20);
         ButtonBox.setAlignment(Pos.CENTER);
-        Button cart = new Button("장바구니");
-        ButtonBox.getChildren().add(cart);
+
+
+        userInfoBox.getStyleClass().add("user-info-box");
+        logoutButton.getStyleClass().add("button-primary");
+        cartButton.getStyleClass().add("button-primary");
+        Menu.getStyleClass().add("menu-pane");
+        Bookinfo.getStyleClass().add("book-info-pane");
+
 
 
         main.getChildren().addAll(header, bestBooks, middle, bottom, ButtonBox);
-
+        main.setStyle("-fx-background-color: #f4f9f9;");
         // Scene 설정
         Scene bookMarketScene = new Scene(main, 800, 600);
+        bookMarketScene.getStylesheets().add(getClass().getResource("/css/bookmarket.css").toExternalForm());
+
         CH_Application.getInstance().stage.setScene(bookMarketScene);
     }
 
@@ -285,10 +326,24 @@ public class Scene_bookMarket {
     void updateInfo(Book book) {
         this.Bookinfo.getChildren().clear();
         VBox bookInfo = new VBox(10);
-        Button toCart = new Button("장바구니에 담기");
-        toCart.setAlignment(Pos.CENTER);
-        toCart.setOnMouseClicked(e->{
 
+        if(CH_Application.getInstance().currentUser.getBuyList().stream().anyMatch(e->e.getTitle().equals(book.getTitle()))){
+            toCart.setText("장바구니 추가 완료");
+            toCart.setDisable(true);
+        }else{
+            toCart.setText("장바구니에 담기");
+            toCart.setDisable(false);
+        }
+        toCart.setAlignment(Pos.CENTER);
+        toCart.getStyleClass().add("button-primary");
+        toCart.setOnMouseClicked(e->{
+            CH_Application.getInstance().currentUser.getBuyList().add(book.CopyBookForCart(book));
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setGraphic(null);
+            alert.setContentText("장바구니에 추가되었습니다!");
+            this.cartButton.setText("장바구니("+CH_Application.getInstance().currentUser.getBuyList().size()+")");
+            alert.showAndWait();
+            updateInfo(book);
         });
         ImageView img = new ImageView(book.getImage());
         img.setPreserveRatio(true);

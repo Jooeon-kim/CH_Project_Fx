@@ -156,8 +156,6 @@ public class BookDAO {
                 String publisher = rs.getString("publisher");
                 int price = rs.getInt("price");
                 String imgPath = rs.getString("imgPath");
-                System.out.println("imgPath from DB: " + imgPath);
-                System.out.println("getResource result: " + getClass().getResource(imgPath));
                 // Book 객체 생성하여 리스트에 추가
                 Book book = new Book(isbn, title, date, author, description, category, publishDate, amount, publisher, price, imgPath);
                 books.add(book);
@@ -168,6 +166,20 @@ public class BookDAO {
         }
 
         return books; // 모든 책 리스트 반환
+    }
+    public void increaseBookAmount(String isbn, int amountToAdd) {
+        String sql = "UPDATE book SET amount = amount + ? WHERE isbn = ?";
+
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, amountToAdd);
+            pstmt.setString(2, isbn);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
 
