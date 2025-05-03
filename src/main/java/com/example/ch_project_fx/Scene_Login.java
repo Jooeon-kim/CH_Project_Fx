@@ -17,6 +17,8 @@ public class Scene_Login {
         String imagePath = "/img/logo.png";
         Image logo = new Image(getClass().getResource(imagePath).toExternalForm());
         ImageView img = new ImageView(logo);
+        img.setFitWidth(400);
+        img.setPreserveRatio(true);
 
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
