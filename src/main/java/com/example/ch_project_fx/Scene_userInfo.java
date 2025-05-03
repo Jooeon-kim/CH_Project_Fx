@@ -91,6 +91,12 @@ public class Scene_userInfo {
             // DB 반영
             updateUserInfoInDB(user);
 
+            UserDAO userDAO = new UserDAO();
+            User updatedUser = userDAO.login(user.getId(), user.getPw());
+
+            CH_Application.getInstance().setCurrentUser(updatedUser);
+
+
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("수정 완료");
             alert.setHeaderText(null);
@@ -98,6 +104,9 @@ public class Scene_userInfo {
             alert.showAndWait();
 
             editBox.setVisible(false);
+            Scene_userInfo newScene = new Scene_userInfo();
+            Scene refreshedScene = newScene.getUserInfoScene(user);  // 현재 user 객체 다시 사용 (단점: 반영 X일 수 있음)
+            CH_Application.getInstance().stage.setScene(refreshedScene);
         });
 
 

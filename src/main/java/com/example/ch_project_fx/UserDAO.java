@@ -123,4 +123,38 @@ public void saveUserToDB(User user) {
             e.printStackTrace();
         }
     }
+    public boolean addPointToUser(String userId, int pointToAdd) {
+        String sql = "UPDATE users SET point = point + ? WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, pointToAdd);
+            pstmt.setString(2, userId);
+
+            int rows = pstmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public boolean subtractPointFromUser(String userId, int pointToSubtract) {
+        String sql = "UPDATE users SET point = point - ? WHERE id = ?";
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, pointToSubtract);
+            pstmt.setString(2, userId);
+
+            int rows = pstmt.executeUpdate();
+            return rows > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+
 }

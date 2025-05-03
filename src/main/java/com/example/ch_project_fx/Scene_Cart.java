@@ -153,6 +153,12 @@ public class Scene_Cart {
             alert.setGraphic(null);
             alert.setContentText("구매가 완료되었습니다");
             alert.showAndWait();
+            UserDAO UD = new UserDAO();
+            User updatedUser = UD.login(
+                    CH_Application.getInstance().getCurrentUser().getId(),
+                    CH_Application.getInstance().getCurrentUser().getPw()
+            );
+            CH_Application.getInstance().setCurrentUser(updatedUser);
             Scene_userSelect userSelect = new Scene_userSelect();
             CH_Application.getInstance().stage.setScene(userSelect.getUserSelectScene());
         });

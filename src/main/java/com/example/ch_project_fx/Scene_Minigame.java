@@ -28,6 +28,7 @@ public class Scene_Minigame {
     int userTotalPoint = 0;
     int computerTotalPoint = 0;
     int BetAmount;
+    int rewardPoint=0;
     Card SplitCard;
     User currentUser = CH_Application.getInstance().getCurrentUser();
     Stage stage = CH_Application.getInstance().stage;
@@ -65,7 +66,8 @@ public class Scene_Minigame {
                 alert.setTitle("포인트가 없네요!?");
                 alert.setContentText("아쉽네요 ㅠ 좀더 독서를 한 뒤에 오세요 ");
                 alert.showAndWait();
-                System.exit(0);
+                Scene_Login SL = new Scene_Login();
+                SL.Login();
             }
             this.stage.setScene(this.currentScene);
         });
@@ -188,7 +190,8 @@ public class Scene_Minigame {
             alert.setTitle("포인트가 없네?");
             alert.setContentText("아쉽네요 ㅠㅠ 더 독서하고와요");
             alert.showAndWait();
-            System.exit(0);
+            Scene_Login SL = new Scene_Login();
+            SL.Login();
         }
         Stage smallStage = new Stage();
         smallStage.initModality(Modality.WINDOW_MODAL);
@@ -217,6 +220,8 @@ public class Scene_Minigame {
                 vipSet.getChildren().clear();
                 this.BetAmount = Integer.parseInt(textFieldBet.getText());
                 this.currentUser.setPoint(this.currentUser.getPoint()-this.BetAmount);
+                UserDAO UD = new UserDAO();
+                UD.subtractPointFromUser(this.currentUser.getId(),this.BetAmount);
                 smallStage.close();
                 if(this.SplitCard==null) {
                     this.userCards.add(drawCard());
@@ -334,7 +339,20 @@ public class Scene_Minigame {
                 alert.setTitle("축하합니다. "+this.BetAmount+"원 획득! ");
                 alert.setContentText("당신이 승리했습니다! "+"\n"+"내 점수: "+getPointUser()+" 딜러점수: "+getPointComputer());
                 this.currentUser.setPoint(this.currentUser.getPoint()+this.BetAmount);
+                UserDAO UD = new UserDAO();
+                UD.addPointToUser(this.currentUser.getId(),this.BetAmount);
                 alert.showAndWait();
+                this.rewardPoint+=this.BetAmount;
+                if(this.rewardPoint>10000){
+                    CouponDAO CD = new CouponDAO();
+                    CD.giveCouponToUser(currentUser.getId(),4);
+                    this.rewardPoint = 0;
+                    Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+                    alert1.setGraphic(null);
+                    alert1.setContentText("10000포인트를 얻어 쿠폰이 지급됬습니다!");
+                    CH_Application.getInstance().setCurrentUser(UD.login(currentUser.getId(),currentUser.getPw()));
+                    alert1.showAndWait();
+                }
                 playAgain();
             }
             else{
