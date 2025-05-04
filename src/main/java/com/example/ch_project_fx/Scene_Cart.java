@@ -96,7 +96,7 @@ public class Scene_Cart {
         updateCart();
         ScrollPane cartListPane = new ScrollPane(cartListBox);
         cartListPane.setFitToWidth(true);
-        cartListPane.setPrefViewportHeight(550);
+        cartListPane.setPrefViewportHeight(500);
         cartListPane.setPrefViewportWidth(600);
         cartListPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         cartListPane.setStyle("-fx-background: #ffffff; -fx-border-color: #cccccc; -fx-border-radius: 8; -fx-background-radius: 8;");

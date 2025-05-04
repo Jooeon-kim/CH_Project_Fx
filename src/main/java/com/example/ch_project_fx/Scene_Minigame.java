@@ -37,26 +37,24 @@ public class Scene_Minigame {
         VBox main = new VBox(20);
         Image logo = new Image(getClass().getResource("/img/logo.png").toExternalForm());
         ImageView imageViewLogo = new ImageView(logo);
+        imageViewLogo.setFitHeight(100);
+        imageViewLogo.setPreserveRatio(true);
         imageViewLogo.setOnMousePressed(e->{
             Scene_userSelect su = new Scene_userSelect();
             CH_Application.getInstance().stage.setScene(su.getUserSelectScene());
         });
-        main.setStyle("-fx-background-color: black");
+        main.setStyle("-fx-background-color: white");
         main.setAlignment(Pos.CENTER);
         Label saySelect = new Label("게임을 선택하세요");
-        saySelect.setStyle("-fx-text-fill: white;");
+        saySelect.setStyle("-fx-text-fill: black;");
         main.getChildren().addAll(imageViewLogo,saySelect);
 
         HBox games = new HBox(20);
         games.setAlignment(Pos.CENTER);
 
-        Image YC = new Image(getClass().getResource("/img/dice.png").toExternalForm());
-        ImageView imageView1 = new ImageView(YC);
-        imageView1.setFitWidth(200);
-        imageView1.setPreserveRatio(true);
         Image BJ = new Image(getClass().getResource("/img/blackjack.png").toExternalForm());
         ImageView imageView2 = new ImageView(BJ);
-        imageView2.setFitWidth(200);
+        imageView2.setFitWidth(350);
         imageView2.setPreserveRatio(true);
         imageView2.setOnMousePressed(e->{
             BlackJack();
@@ -73,10 +71,10 @@ public class Scene_Minigame {
         });
         Image Lie = new Image(getClass().getResource("/img/Liar.png").toExternalForm());
         ImageView imageView3 = new ImageView(Lie);
-        imageView3.setFitWidth(200);
+        imageView3.setFitWidth(350);
         imageView3.setPreserveRatio(true);
 
-        games.getChildren().addAll(imageView1,imageView2,imageView3);
+        games.getChildren().addAll(imageView2,imageView3);
 
         main.getChildren().add(games);
 

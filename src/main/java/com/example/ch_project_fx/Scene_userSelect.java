@@ -61,7 +61,10 @@ public class Scene_userSelect {
             SM.SelectGame();
         });
         VBox libraryBox = createMenuCard("/img/library.png", "책 대여");
-
+        libraryBox.setOnMousePressed(e->{
+            Scene_Library SL = new Scene_Library();
+            SL.openLibrary();
+        });
 
         VBox marketBox = createMenuCard("/img/bookmarket.png", "온라인 서점");
         marketBox.setOnMousePressed(e->{

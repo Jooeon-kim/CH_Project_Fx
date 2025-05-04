@@ -8,6 +8,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 import java.util.Comparator;
@@ -49,46 +51,53 @@ public class Scene_bookMarket {
         // 메인 VBox 설정
         VBox main = new VBox(20);
         main.setAlignment(Pos.TOP_CENTER);
+        main.setPadding(new Insets(20));
+        main.setStyle("-fx-background-color: #f4f9f9;");
 
-        // 로고 이미지 및 클릭 이벤트
         Image logo = new Image(getClass().getResource("/img/logo.png").toExternalForm());
         ImageView imageViewLogo = new ImageView(logo);
-        imageViewLogo.setFitHeight(60); // 로고 크기 조정
+        imageViewLogo.setFitHeight(60);
         imageViewLogo.setPreserveRatio(true);
         imageViewLogo.setOnMousePressed(e -> {
             Scene_userSelect su = new Scene_userSelect();
             CH_Application.getInstance().stage.setScene(su.getUserSelectScene());
         });
 
-        // 유저 정보와 로그아웃 버튼이 포함된 GridPane
         GridPane userInfoBox = new GridPane();
-        userInfoBox.setMaxWidth(200);
-        userInfoBox.setStyle("-fx-background-color: #e0f7fa; -fx-border-color: #00796b; -fx-border-radius: 10; -fx-padding: 20;");
+        userInfoBox.setMaxWidth(300);
+        userInfoBox.setHgap(10);
+        userInfoBox.setVgap(10);
+        userInfoBox.setPadding(new Insets(15));
+        userInfoBox.setStyle("-fx-background-color: #e0f7fa; -fx-border-color: #00796b; -fx-border-radius: 10; -fx-background-radius: 10;");
 
-        // 유저 정보 라벨 (예시: 이름, 보유 포인트, 등급, ID)
+        Font infoFont = Font.font("Arial", FontWeight.NORMAL, 14);
+
         Label userNameLabel = new Label("이름: " + CH_Application.getInstance().currentUser.getName());
+        userNameLabel.setFont(infoFont);
         Label userPointsLabel = new Label("포인트: " + CH_Application.getInstance().currentUser.getPoint());
+        userPointsLabel.setFont(infoFont);
         Label userGradeLabel = new Label("등급: " + CH_Application.getInstance().currentUser.getGrade());
+        userGradeLabel.setFont(infoFont);
         Label userIdLabel = new Label("ID: " + CH_Application.getInstance().currentUser.getId());
+        userIdLabel.setFont(infoFont);
         userInfoBox.add(userNameLabel, 0, 0);
         userInfoBox.add(userPointsLabel, 0, 1);
         userInfoBox.add(userGradeLabel, 1, 0);
         userInfoBox.add(userIdLabel, 1, 1);
 
         HBox buttons = new HBox(20);
-        // 로그아웃 버튼
-        Button logoutButton = new Button("로그아웃");
-        logoutButton.setStyle("-fx-background-color: #00796b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-border-radius: 5;");
+
+        Button logoutButton = createStyledButton("로그아웃");
         logoutButton.setOnAction(e -> {
-            // 로그아웃 처리 로직 (예시)
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setGraphic(null);
-            alert.setContentText(CH_Application.getInstance().currentUser.getName()+"님 로그아웃 되었습니다 다음에봐요~!");
+            alert.setContentText(CH_Application.getInstance().currentUser.getName() + "님 로그아웃 되었습니다. 다음에 봐요~!");
             alert.showAndWait();
             Scene_Login login = new Scene_Login();
             login.Login();
             CH_Application.getInstance().stage.setScene(CH_Application.getInstance().currentScene);
         });
+
         this.cartButton.setOnMousePressed(e->{
             if(CH_Application.getInstance().currentUser.getBuyList().isEmpty()){
                 Alert alert  =new Alert(Alert.AlertType.WARNING);
@@ -96,29 +105,26 @@ public class Scene_bookMarket {
                 alert.setContentText("장바구니가 비어있습니다");
                 alert.showAndWait();
             }else{
-            Scene_Cart SC = new Scene_Cart();
-            SC.userCart();
+                Scene_Cart SC = new Scene_Cart();
+                SC.userCart();
             }
         });
-        this.cartButton.setStyle("-fx-background-color: #00796b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-border-radius: 5;");
-        // 유저 정보와 로그아웃 버튼을 한 곳에 배치
-        VBox userInfoVBox = new VBox(10);
-        buttons.getChildren().addAll(logoutButton,this.cartButton);
-        userInfoVBox.getChildren().addAll(userInfoBox, buttons);
+        this.cartButton.setStyle("-fx-background-color: #00796b; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8;");
+        buttons.getChildren().addAll(logoutButton, this.cartButton);
+        VBox userInfoVBox = new VBox(10, userInfoBox, buttons);
+        userInfoVBox.setAlignment(Pos.CENTER_RIGHT);
 
         Image bookMarketLogo = new Image(getClass().getResource("/img/bookmarketlogo.png").toExternalForm());
         ImageView imageView = new ImageView(bookMarketLogo);
         imageView.setPreserveRatio(false);
         imageView.setFitHeight(100);
         imageView.setFitWidth(200);
-        // 로고와 유저 정보를 한 줄로 배치
+
         BorderPane header = new BorderPane();
         header.setPadding(new Insets(10));
         header.setLeft(imageViewLogo);
         header.setCenter(imageView);
         header.setRight(userInfoVBox);
-
-
         // 베스트셀러 책들
         HBox bestBooks = new HBox(10);
         bestBooks.setAlignment(Pos.CENTER);
@@ -358,5 +364,12 @@ public class Scene_bookMarket {
         bookInfo.getChildren().addAll(toCart,img, infoTag, bookName, bookAuthor, bookPublisher, bookPrice, info);
         this.Bookinfo.getChildren().add(bookInfo);
 
+    }
+
+    // 공통 버튼 스타일
+    private Button createStyledButton(String text) {
+        Button btn = new Button(text);
+        btn.setStyle("-fx-background-color: #00796b; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 8;");
+        return btn;
     }
 }
