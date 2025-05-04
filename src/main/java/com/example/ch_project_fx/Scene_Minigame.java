@@ -73,7 +73,20 @@ public class Scene_Minigame {
         ImageView imageView3 = new ImageView(Lie);
         imageView3.setFitWidth(350);
         imageView3.setPreserveRatio(true);
-
+        imageView3.setOnMousePressed(e->{
+            Scene_LiarsGame LG = new Scene_LiarsGame();
+            if(this.currentUser.getPoint()<=0){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.initOwner(this.stage);
+                alert.setTitle("포인트가 없네요!?");
+                alert.setContentText("아쉽네요 ㅠ 좀더 독서를 한 뒤에 오세요 ");
+                alert.showAndWait();
+                Scene_Login SL = new Scene_Login();
+                SL.Login();
+            }else{
+            LG.startBet();
+            }
+        });
         games.getChildren().addAll(imageView2,imageView3);
 
         main.getChildren().add(games);

@@ -2,6 +2,8 @@ package com.example.ch_project_fx;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 public class Deck {
     public ArrayList<Card> cards;
@@ -66,4 +68,44 @@ public class Deck {
         cards.add(new Card(suit[3],rank[12],value[12],"/img/KC.png"));
         Collections.shuffle(cards);
     }
+    public List<Card> LiarsDecK(){
+        List <Card> cards = new ArrayList<>();
+        String[] suit = {"♠", "◆", "♥", "♣"};
+        String[] rank = {"A","2","3","4","5","6","7","8","9","10","J","Q","K"};
+
+
+
+        cards.add(new Card(suit[0],rank[0],1,"/img/AS.png"));
+        cards.add(new Card(suit[0],rank[0],2,"/img/AS.png"));
+        cards.add(new Card(suit[0],rank[0],3,"/img/AS.png"));
+        cards.add(new Card(suit[0],rank[0],4,"/img/AS.png"));
+        cards.add(new Card(suit[0],rank[0],5,"/img/AS.png"));
+        cards.add(new Card(suit[0],rank[0],6,"/img/AS.png"));
+        cards.add(new Card(suit[2],rank[11],7,"/img/QH.png"));
+        cards.add(new Card(suit[2],rank[11],8,"/img/QH.png"));
+        cards.add(new Card(suit[2],rank[11],9,"/img/QH.png"));
+        cards.add(new Card(suit[2],rank[11],10,"/img/QH.png"));
+        cards.add(new Card(suit[2],rank[11],11,"/img/QH.png"));
+        cards.add(new Card(suit[2],rank[11],12,"/img/QH.png"));
+        cards.add(new Card(suit[3],rank[12],13,"/img/KC.png"));
+        cards.add(new Card(suit[3],rank[12],14,"/img/KC.png"));
+        cards.add(new Card(suit[3],rank[12],15,"/img/KC.png"));
+        cards.add(new Card(suit[3],rank[12],16,"/img/KC.png"));
+        cards.add(new Card(suit[3],rank[12],17,"/img/KC.png"));
+        cards.add(new Card(suit[3],rank[12],18,"/img/KC.png"));
+        cards.add(new Card(suit[3],"joker",19,"/img/joker.png"));
+        cards.add(new Card(suit[3],"joker",20,"/img/joker.png"));
+
+
+
+
+        Collections.shuffle(cards);
+        return cards;
+    }
+    public Card drawCard(){
+        return cards.remove(0);
+    }
 }
+
+
+
