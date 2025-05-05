@@ -1,9 +1,15 @@
 package com.example.ch_project_fx;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,6 +17,10 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.util.Duration;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class Scene_userSelect {
 
@@ -22,7 +32,7 @@ public class Scene_userSelect {
         ImageView logoView = new ImageView(new Image(getClass().getResource("/img/logo.png").toExternalForm()));
         logoView.setFitHeight(120);
         logoView.setPreserveRatio(true);
-        logoView.setOnMousePressed(e->{
+        logoView.setOnMousePressed(e -> {
             Scene_Login login = new Scene_Login();
             login.Login();
             CH_Application.getInstance().stage.setScene(CH_Application.getInstance().currentScene);
@@ -33,20 +43,25 @@ public class Scene_userSelect {
         // 유저 인사말
         VBox welcomeBox = new VBox(10);
         welcomeBox.setAlignment(Pos.CENTER);
-        welcomeBox.setStyle("-fx-background-color: linear-gradient(to bottom right, #cceeff, #99ccff);"
-                + "-fx-background-radius: 15;"
-                + "-fx-border-radius: 15;"
-                + "-fx-border-color: #3399ff;"
-                + "-fx-border-width: 2;");
+        welcomeBox.setStyle("""
+                    -fx-background-color: linear-gradient(to bottom, #ffffff, #e0f0ff);
+                    -fx-background-radius: 20;
+                    -fx-border-radius: 20;
+                    -fx-border-color: #a0c4ff;
+                    -fx-border-width: 1.5;
+                    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+                    -fx-padding: 20;
+                """);
         Label welcomeLabel = new Label(CH_Application.getInstance().currentUser.getName() + "님 반가워요");
-        welcomeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        welcomeLabel.setTextFill(Color.web("#0066cc"));
 
+        welcomeLabel.setFont(Font.font("Helvetica", FontWeight.BOLD, 22));
+        welcomeLabel.setTextFill(Color.web("#1a73e8"));
 
         Label greetingLabel = new Label("오늘도 독서하기 좋은 날이네요!");
-        greetingLabel.setFont(Font.font(16));
-        greetingLabel.setTextFill(Color.web("#003366"));
+        greetingLabel.setFont(Font.font("Helvetica", FontWeight.NORMAL, 16));
+        greetingLabel.setTextFill(Color.web("#555555"));
         welcomeBox.getChildren().addAll(welcomeLabel, greetingLabel);
+
 
         // 메뉴 카드 (이미지 + 라벨)
         GridPane gridPane = new GridPane();
@@ -56,18 +71,18 @@ public class Scene_userSelect {
         gridPane.setAlignment(Pos.CENTER);
 
         VBox miniGameBox = createMenuCard("/img/minigame.png", "미니게임");
-        miniGameBox.setOnMousePressed(e->{
+        miniGameBox.setOnMousePressed(e -> {
             Scene_Minigame SM = new Scene_Minigame();
             SM.SelectGame();
         });
         VBox libraryBox = createMenuCard("/img/library.png", "책 대여");
-        libraryBox.setOnMousePressed(e->{
+        libraryBox.setOnMousePressed(e -> {
             Scene_Library SL = new Scene_Library();
             SL.openLibrary();
         });
 
         VBox marketBox = createMenuCard("/img/bookmarket.png", "온라인 서점");
-        marketBox.setOnMousePressed(e->{
+        marketBox.setOnMousePressed(e -> {
             Scene_bookMarket BM = new Scene_bookMarket();
             BM.openMarket();
         });
@@ -75,12 +90,58 @@ public class Scene_userSelect {
         gridPane.add(libraryBox, 1, 0);
         gridPane.add(marketBox, 2, 0);
 
+        GridPane Bottom = new GridPane();
+        Bottom.setHgap(40);
+        Bottom.setVgap(20);
+        Bottom.setPadding(new Insets(20));
+        Bottom.setAlignment(Pos.CENTER);
+
+        Image image = new Image(getClass().getResource("/img/BookBot.png").toExternalForm());
+        ImageView bookBot = new ImageView(image);
+        bookBot.setPreserveRatio(true);
+        bookBot.setFitHeight(200);
+        bookBot.setOnMousePressed(e -> {
+            Scene_ChatBot SC = new Scene_ChatBot();
+            SC.runChatBot();
+        });
+        Image image1 = new Image(getClass().getResource("/img/a1.jpg").toExternalForm());
+        Image image2 = new Image(getClass().getResource("/img/a2.jpg").toExternalForm());
+        Image image3 = new Image(getClass().getResource("/img/a3.jpg").toExternalForm());
+        Image image4 = new Image(getClass().getResource("/img/a4.jpg").toExternalForm());
+        Image image5 = new Image(getClass().getResource("/img/a5.jpg").toExternalForm());
+        Image image6 = new Image(getClass().getResource("/img/a6.jpg").toExternalForm());
+
+
+        ImageView imageView = new ImageView(image1);
+        imageView.setFitHeight(240);
+        imageView.setPreserveRatio(true);
+        StackPane imageContainer = new StackPane(imageView);
+        imageContainer.setStyle("-fx-border-color: black; -fx-border-width: 2;");
+        List<Image> images = Arrays.asList(image1, image2, image3, image4, image5, image6);
+        IntegerProperty currentIndex = new SimpleIntegerProperty(0);
+
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(2), e -> {
+            int nextIndex = (currentIndex.get() + 1) % images.size();
+            imageView.setImage(images.get(nextIndex));
+            currentIndex.set(nextIndex);
+        }));
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+
+
+        Bottom.add(bookBot, 1, 0);
+        Bottom.add(imageContainer, 0, 0);
+        Bottom.add(createUserInfoBox(), 2, 0);
+        Bottom.setPadding(new Insets(0, 0, 30, 0)); // Bottom 내부 요소들과의 간격 확보
+
+
         // 전체 레이아웃
         VBox root = new VBox(20);
         root.setAlignment(Pos.TOP_CENTER);
         root.setPadding(new Insets(30));
-        root.getChildren().addAll(topBox, welcomeBox, gridPane, createUserInfoBox());
-        root.setStyle("-fx-background-color: #ffffff;" );
+        root.getChildren().addAll(topBox, welcomeBox, gridPane, Bottom);
+
+        root.setStyle("-fx-background-color: #ffffff;");
         return new Scene(root, 800, 600); // 적절한 크기 지정
     }
 
@@ -102,47 +163,46 @@ public class Scene_userSelect {
 
         return box;
     }
+
     private VBox createUserInfoBox() {
-        Label nameLabel = new Label("유저이름 : " + CH_Application.getInstance().currentUser.getName());
-        Label pointLabel = new Label("잔여 포인트 : " + CH_Application.getInstance().currentUser.getPoint());
-        Label idLabel = new Label("아이디 : " + CH_Application.getInstance().currentUser.getId());
-        Label gradeLabel = new Label("회원 등급 : " + CH_Application.getInstance().currentUser.getGrade());
+        Label nameLabel = new Label("유저이름: " + CH_Application.getInstance().currentUser.getName());
+        Label pointLabel = new Label("잔여 포인트: " + CH_Application.getInstance().currentUser.getPoint());
+        Label idLabel = new Label("아이디: " + CH_Application.getInstance().currentUser.getId());
+        Label gradeLabel = new Label("회원 등급: " + CH_Application.getInstance().currentUser.getGrade());
 
-        nameLabel.setFont(Font.font(14));
-        pointLabel.setFont(Font.font(14));
-        idLabel.setFont(Font.font(14));
-        gradeLabel.setFont(Font.font(14));
+        nameLabel.setFont(Font.font(15));
+        pointLabel.setFont(Font.font(15));
+        idLabel.setFont(Font.font(15));
+        gradeLabel.setFont(Font.font(15));
 
-        HBox row1 = new HBox(40, nameLabel, pointLabel);
-        HBox row2 = new HBox(40, idLabel, gradeLabel);
-        row1.setAlignment(Pos.CENTER_LEFT);
-        row2.setAlignment(Pos.CENTER_LEFT);
+        Button logoutBtn = new Button("로그아웃");
+        Button infoBtn = new Button("회원정보 보기");
+        logoutBtn.setStyle("-fx-background-color: #e0f0ff; -fx-text-fill: #003366;");
+        infoBtn.setStyle("-fx-background-color: #e0f0ff; -fx-text-fill: #003366;");
 
-        HBox buttonBox = new HBox(20);
-        buttonBox.setAlignment(Pos.CENTER_RIGHT);
-        Label logoutLabel = new Label("로그아웃");
-        Label infoLabel = new Label("회원정보보기");
-        logoutLabel.setTextFill(Color.BLUE);
-        infoLabel.setTextFill(Color.BLUE);
-        logoutLabel.setOnMouseClicked(e -> {
+        logoutBtn.setOnAction(e -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setGraphic(null);
-            alert.setContentText(CH_Application.getInstance().currentUser.getName()+"님 로그아웃 되었습니다 다음에봐요~!");
+            alert.setContentText(CH_Application.getInstance().currentUser.getName() + "님 로그아웃 되었습니다. 다음에 봐요~!");
             alert.showAndWait();
             Scene_Login login = new Scene_Login();
             login.Login();
             CH_Application.getInstance().stage.setScene(CH_Application.getInstance().currentScene);
         });
-        infoLabel.setOnMouseClicked(e -> {
+
+        infoBtn.setOnAction(e -> {
             Scene_userInfo info = new Scene_userInfo();
             CH_Application.getInstance().stage.setScene(info.getUserInfoScene(CH_Application.getInstance().getCurrentUser()));
         });
 
-        buttonBox.getChildren().addAll(logoutLabel, infoLabel);
+        HBox buttonBox = new HBox(10, infoBtn, logoutBtn);
+        buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox userInfoBox = new VBox(10, row1, row2, buttonBox);
+        VBox userInfoBox = new VBox(10);
+        userInfoBox.getChildren().addAll(nameLabel, pointLabel, idLabel, gradeLabel, buttonBox);
         userInfoBox.setPadding(new Insets(20));
-        userInfoBox.setStyle("-fx-background-color: #f0f8ff; -fx-border-color: #a0c0ff; -fx-border-radius: 10; -fx-background-radius: 10;");
+        userInfoBox.setStyle("-fx-background-color: #f8fbff; -fx-border-color: #b0cfff; -fx-border-radius: 10; -fx-background-radius: 10;");
+
         return userInfoBox;
     }
 
