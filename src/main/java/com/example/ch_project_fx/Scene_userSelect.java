@@ -20,7 +20,7 @@ public class Scene_userSelect {
         topBox.setPadding(new Insets(30, 0, 20, 0));
         topBox.setAlignment(Pos.CENTER);
         ImageView logoView = new ImageView(new Image(getClass().getResource("/img/logo.png").toExternalForm()));
-        logoView.setFitHeight(80);
+        logoView.setFitHeight(120);
         logoView.setPreserveRatio(true);
         logoView.setOnMousePressed(e->{
             Scene_Login login = new Scene_Login();

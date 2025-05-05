@@ -36,7 +36,7 @@ public class Scene_Library {
 
         Image logo = new Image(getClass().getResource("/img/logo.png").toExternalForm());
         ImageView imageViewLogo = new ImageView(logo);
-        imageViewLogo.setFitHeight(60);
+        imageViewLogo.setFitHeight(120);
         imageViewLogo.setPreserveRatio(true);
         imageViewLogo.setOnMousePressed(e -> {
             Scene_userSelect su = new Scene_userSelect();

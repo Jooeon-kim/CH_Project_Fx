@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 
 public class Scene_LiarsGame {
+
     User user = CH_Application.getInstance().getCurrentUser();
     LiarsPlayer player1;
 
@@ -42,6 +44,8 @@ public class Scene_LiarsGame {
     boolean isLie = false;
 
     void startBet() {
+        URL url = getClass().getResource("/css/liarsgame.css");
+        System.out.println("CSS URL: " + url);
         if (this.user.getPoint() == 0) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText(null);
@@ -50,18 +54,24 @@ public class Scene_LiarsGame {
             Scene_Minigame SM = new Scene_Minigame();
             SM.SelectGame();
         }
+        userDeck.setId("userDeck");
+        player1Deck.setId("player1Deck");
+        textArea.setId("textArea");
 
         Stage smallStage = new Stage();
         VBox small = new VBox(20);
+        small.setStyle("-fx-background-color: #ffffff; -fx-padding: 20; -fx-border-radius: 10;");
 
         VBox vipBox = new VBox(20);
         VBox vipSet = new VBox(20);
 
         Label inputBet = new Label("배팅할 금액을 입력하세요");
+        inputBet.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
         Label userMoneyInfo = new Label(this.user.getName() + " 보유 money: " + this.user.getPoint());
 
         TextField textFieldBet = new TextField();
+        textFieldBet.setMaxWidth(150);
 
         textFieldBet.setAlignment(Pos.CENTER);
 
@@ -86,6 +96,7 @@ public class Scene_LiarsGame {
         small.getChildren().addAll(vipBox, vipSet);
 
         Scene smallScene = new Scene(small, 400, 300);
+        smallScene.getStylesheets().add(getClass().getResource("/css/liarsgame.css").toExternalForm());
         smallStage.setScene(smallScene);
         smallStage.show();
     }
@@ -155,7 +166,7 @@ public class Scene_LiarsGame {
         VBox mainRankCardBox = new VBox(10);
         Label label = new Label("메인랭크: "+this.mainRank);
         ImageView MainRankCard = new ImageView(this.fieldCard.img);
-        MainRankCard.setFitHeight(200);
+        MainRankCard.setFitHeight(100);
         mainRankCardBox.getChildren().addAll(label,MainRankCard);
         MainRankCard.setPreserveRatio(true);
         middle.setAlignment(Pos.CENTER);
@@ -181,6 +192,8 @@ public class Scene_LiarsGame {
         main.setBottom(bottom);
 //++++++++++++++++++++++++++++하단 유저정보++++++++++++++++++++++++++++++++++++++++++++++++
         Scene LiarsGameScene = new Scene(main);
+        LiarsGameScene.getStylesheets().add(getClass().getResource("/css/liarsgame.css").toExternalForm());
+
         CH_Application.getInstance().stage.setScene(LiarsGameScene);
         startGameFlow();
 
@@ -214,6 +227,7 @@ public class Scene_LiarsGame {
     }
 
     void aiStrike() {
+        if (this.winner != null) return;
         this.userDeck.setStyle("-fx-border-color: black; -fx-border-width: 2;");
         aiChooseForStrike();
         PauseTransition p4 = new PauseTransition(Duration.seconds(2));
@@ -221,6 +235,7 @@ public class Scene_LiarsGame {
         p4.play();
     }
     void aiSetCard(){
+        if (this.winner != null) return;
         this.LastPlayerCard = this.player1.selectAct(this.gameDeck);
         setText(this.player1.getName()+"(이)가 카드를 제출합니다");
         showHiddenResultCartBox();
@@ -230,6 +245,7 @@ public class Scene_LiarsGame {
         p5.play();
     }
     void playerStrike(){
+        if (this.winner != null) return;
         setText("라이어? or 넘기기");
 
         PauseTransition p = new PauseTransition(Duration.seconds(0.1)); // 아주 짧은 딜레이
@@ -306,6 +322,7 @@ public class Scene_LiarsGame {
 
     void setText(String text) {
         Label input1 = new Label(text);
+        input1.setId("textLabel");
         this.textArea.getChildren().addAll(input1);
         if (this.textArea.getChildren().size() > 7) {
             this.textArea.getChildren().remove(0);
@@ -534,15 +551,32 @@ public class Scene_LiarsGame {
         setText("게임 종료!");
         setText("승자: " + this.winner.getName());
         setText("패자: " + this.loser.getName());
+        PauseTransition showResult = new PauseTransition(Duration.seconds(2));
+        showResult.setOnFinished(e->{
+            if(this.winner == user){
+                UserDAO UD = new UserDAO();
+                UD.addPointToUser(this.user.getId(),this.BetAmount*2);
+                setText(this.BetAmount*2+"포인트 지급됨!");
+                if(this.BetAmount*2>10000){
+                    CouponDAO CD = new CouponDAO();
+                    CD.giveCouponToUser(this.user.getId(),4);
+                    setText("10000포인트를 따내어 쿠폰이 지급되었습니다!");
+                }
+            }else{
+                setText("다음기회에 또 도전하세요!");
+            }
+        });
+        showResult.play();
 
         PauseTransition resetDelay = new PauseTransition(Duration.seconds(5));
         resetDelay.setOnFinished(e ->  {
+            CH_Application.getInstance().getCurrentUser().PlayerDeck.clear();
             this.textArea.getChildren().clear();
             this.resultCardBox.getChildren().clear();
             this.playerSetCards.getChildren().clear();
             this.userDeck.getChildren().clear();
             this.player1Deck.getChildren().clear();
-
+            this.BetAmount=0;
             // 승패 초기화
             this.winner = null;
             this.loser = null;
