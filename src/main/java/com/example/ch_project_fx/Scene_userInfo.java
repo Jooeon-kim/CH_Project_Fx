@@ -15,7 +15,9 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Scene_userInfo {
@@ -178,6 +180,49 @@ public class Scene_userInfo {
 
             }
         });
+        Button showBorrowList = new Button("대여목록");
+        showBorrowList.setPrefWidth(150);
+        showBorrowList.setStyle("-fx-background-color: #3399ff; -fx-text-fill: white; -fx-font-weight: bold;");
+
+        showBorrowList.setOnMouseClicked(e -> {
+            List<String> book = getBorrowStatus(user.getId());  // <- 함수 이름 변경됨
+
+            if (book.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setGraphic(null);
+                alert.setContentText("대여한 도서가 없습니다");
+                alert.showAndWait();
+            } else {
+                VBox borrowList = new VBox(10);
+                borrowList.setStyle("-fx-background-color: #f4f4f4;");
+                Label titleLabel = new Label("📚 대여 내역");
+                titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+                titleLabel.setTextFill(Color.DARKBLUE);
+                borrowList.getChildren().add(titleLabel);
+
+                for (String s : book) {
+                    Label bookStatus = new Label(s);
+                    bookStatus.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 14));
+                    bookStatus.setTextFill(Color.BLACK);
+                    borrowList.getChildren().add(bookStatus);
+                }
+
+                Button check = new Button("확인");
+                check.setStyle("-fx-background-color: #3399ff; -fx-text-fill: white; -fx-font-weight: bold;");
+                check.setOnMousePressed(u -> {
+                    ((Stage) check.getScene().getWindow()).close();
+                });
+
+                borrowList.getChildren().add(check);
+                borrowList.setAlignment(Pos.CENTER);
+
+                Scene miniScene = new Scene(borrowList, 500, 400);
+                Stage popUp = new Stage();
+                popUp.setScene(miniScene);
+                popUp.initModality(Modality.APPLICATION_MODAL);
+                popUp.showAndWait();
+            }
+        });
 
         Button backButton = new Button("뒤로가기");
         backButton.setPrefWidth(150);
@@ -187,7 +232,7 @@ public class Scene_userInfo {
             Scene_userSelect userSelect= new Scene_userSelect();
             CH_Application.getInstance().stage.setScene(userSelect.getUserSelectScene());
         });
-        buttonBox.getChildren().addAll(editButton, backButton,showPurchaseList);
+        buttonBox.getChildren().addAll(editButton, backButton,showPurchaseList,showBorrowList);
         buttonBox.setAlignment(Pos.CENTER);
 
         // 최종 레이아웃
@@ -227,5 +272,35 @@ public class Scene_userInfo {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    public List<String> getBorrowStatus(String userId) {
+        List<String> borrowMessages = new ArrayList<>();
+        String sql = """
+        SELECT b.title, DATEDIFF(br.due_date, CURDATE()) AS days_left
+        FROM borrows br
+        JOIN book b ON br.isbn = b.isbn
+        WHERE br.user_id = ?
+        """;
+
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String title = rs.getString("title");
+                int daysLeft = rs.getInt("days_left");
+
+                if (daysLeft >= 0) {
+                    borrowMessages.add("[" + title + "] 도서의 반납까지 " + daysLeft + "일 남았습니다.");
+                } else {
+                    borrowMessages.add("[" + title + "] 도서가 " + Math.abs(daysLeft) + "일 연체되었습니다.");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return borrowMessages;
     }
 }

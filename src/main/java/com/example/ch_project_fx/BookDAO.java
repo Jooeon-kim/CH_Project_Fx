@@ -1,6 +1,8 @@
 package com.example.ch_project_fx;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -174,6 +176,80 @@ public class BookDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, amountToAdd);
+            pstmt.setString(2, isbn);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }public List<Book> getBorrowedBooks(String userId) {
+        List<Book> borrowedBooks = new ArrayList<>();
+        String sql = "SELECT b.* FROM borrows br JOIN book b ON br.isbn = b.isbn WHERE br.user_id = ?";
+
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Book book = new Book(
+                        rs.getString("isbn"),
+                        rs.getString("title"),
+                        rs.getInt("date"), // 출판 날짜가 int로 저장되어 있다면
+                        rs.getString("author"),
+                        rs.getString("description"),
+                        rs.getString("category"),
+                        rs.getString("publishDate"),
+                        rs.getInt("amount"),
+                        rs.getString("publisher"),
+                        rs.getInt("price"),
+                        rs.getString("imgPath")
+                );
+                borrowedBooks.add(book); // borrowedBooks 리스트에 추가
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(borrowedBooks.isEmpty()){
+            return null;
+        }else{
+        return borrowedBooks;
+    }}
+    public int calculateOverdueDays(String userId) throws SQLException {
+        String query = "SELECT due_date FROM borrows WHERE user_id = ? AND due_date < CURDATE()"; // 연체된 책만 조회
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            int overdueDays = 0;
+            while (rs.next()) {
+                Date dueDate = rs.getDate("due_date");
+                if (dueDate != null) {
+                    // 현재 날짜와 due_date의 차이를 구함
+                    LocalDate dueLocalDate = dueDate.toLocalDate();
+                    LocalDate currentDate = LocalDate.now();
+                    long daysBetween = ChronoUnit.DAYS.between(dueLocalDate, currentDate);
+                    if (daysBetween > 0) {
+                        overdueDays += daysBetween; // 연체일수 합산
+                    }
+                }
+            }
+            return overdueDays;
+        }
+    }
+    public void insertBorrow(String userId, String isbn) {
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                     "INSERT INTO borrows (user_id, isbn, borrow_date, due_date, remaining_days) " +
+                             "VALUES (?, ?, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 7 DAY), 7)"
+             )) {
+
+            pstmt.setString(1, userId);
             pstmt.setString(2, isbn);
             pstmt.executeUpdate();
 

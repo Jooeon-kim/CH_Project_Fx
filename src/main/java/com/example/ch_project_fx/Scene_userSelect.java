@@ -19,6 +19,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.util.Duration;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,8 +81,15 @@ public class Scene_userSelect {
         });
         VBox libraryBox = createMenuCard("/img/bookMarket/library.png", "책 대여");
         libraryBox.setOnMousePressed(e -> {
-            Scene_Library SL = new Scene_Library();
-            SL.openLibrary();
+            if (isUserCurrentlyBorrowing(CH_Application.getInstance().currentUser.getId())) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setGraphic(null);
+                alert.setContentText("현재 대여중인 책이 있어 도서관에 입장할 수 없습니다.");
+                alert.showAndWait();
+            }else {
+                Scene_Library SL = new Scene_Library();
+                SL.openLibrary();
+            }
         });
 
         VBox marketBox = createMenuCard("/img/bookMarket/bookmarket.png", "온라인 서점");
@@ -204,6 +215,27 @@ public class Scene_userSelect {
         userInfoBox.setStyle("-fx-background-color: #f8fbff; -fx-border-color: #b0cfff; -fx-border-radius: 10; -fx-background-radius: 10;");
 
         return userInfoBox;
+    }
+    public boolean isUserCurrentlyBorrowing(String userId) {
+        String sql = """
+    SELECT COUNT(*) FROM borrows 
+    WHERE user_id = ? AND CURDATE() <= due_date
+    """;
+
+        try (Connection conn = DBConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0; // 대여중인 책이 있으면 true
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false; // 대여중인 책이 없으면 false
     }
 
 }
