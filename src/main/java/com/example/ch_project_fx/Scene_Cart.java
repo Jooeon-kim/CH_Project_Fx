@@ -1,4 +1,5 @@
 package com.example.ch_project_fx;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,8 +20,9 @@ import java.util.List;
 public class Scene_Cart {
     Label totalPrice = new Label();
     VBox cartListBox = new VBox(20);
-    Coupon usedCoupon=null;
+    Coupon usedCoupon = null;
     int totalPriceInt = 0;
+
     void userCart() {
         VBox main = new VBox(20);
         main.setAlignment(Pos.TOP_CENTER);
@@ -125,28 +127,28 @@ public class Scene_Cart {
 
         VBox payButtons = new VBox(10);
         Button getPay = createStyledButton("결제하기");
-        getPay.setOnMousePressed(e->{
-            if(this.usedCoupon!=null){
+        getPay.setOnMousePressed(e -> {
+            if (this.usedCoupon != null) {
                 CouponDAO cd = new CouponDAO();
-                cd.useCoupon(CH_Application.getInstance().currentUser.getId(),this.usedCoupon.getId());
+                cd.useCoupon(CH_Application.getInstance().currentUser.getId(), this.usedCoupon.getId());
                 PurchaseDAO PD = new PurchaseDAO();
-                for(Book b : CH_Application.getInstance().currentUser.getBuyList()){
+                for (Book b : CH_Application.getInstance().currentUser.getBuyList()) {
                     BookDAO BD = new BookDAO();
                     BD.increaseBookAmount(b.getIsbn(), b.amount);
-                    PD.recordPurchase(CH_Application.getInstance().currentUser.getId(),b.isbn,b.getAmount());
+                    PD.recordPurchase(CH_Application.getInstance().currentUser.getId(), b.isbn, b.getAmount());
                 }
                 UserDAO UD = new UserDAO();
-                UD.updateUserAfterPurchase(CH_Application.getInstance().currentUser.getId(),this.totalPriceInt);
+                UD.updateUserAfterPurchase(CH_Application.getInstance().currentUser.getId(), this.totalPriceInt);
                 this.usedCoupon = null;
-            }else{
+            } else {
                 PurchaseDAO PD = new PurchaseDAO();
-                for(Book b : CH_Application.getInstance().currentUser.getBuyList()){
+                for (Book b : CH_Application.getInstance().currentUser.getBuyList()) {
                     BookDAO BD = new BookDAO();
                     BD.increaseBookAmount(b.getIsbn(), b.amount);
-                    PD.recordPurchase(CH_Application.getInstance().currentUser.getId(),b.isbn,b.getAmount());
+                    PD.recordPurchase(CH_Application.getInstance().currentUser.getId(), b.isbn, b.getAmount());
                 }
                 UserDAO UD = new UserDAO();
-                UD.updateUserAfterPurchase(CH_Application.getInstance().currentUser.getId(),getTotalPrice());
+                UD.updateUserAfterPurchase(CH_Application.getInstance().currentUser.getId(), getTotalPrice());
             }
             CH_Application.getInstance().currentUser.getBuyList().clear();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -163,29 +165,29 @@ public class Scene_Cart {
             CH_Application.getInstance().stage.setScene(userSelect.getUserSelectScene());
         });
         Button useCoupon = createStyledButton("쿠폰사용");
-        useCoupon.setOnMousePressed(e->{
-        if(CH_Application.getInstance().currentUser.getCoupons().isEmpty()){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("쿠폰 없음");
-            alert.setHeaderText(null);
-            alert.setContentText("보유 중인 쿠폰이 없습니다.");
-            alert.showAndWait();
-            return;
-        }
+        useCoupon.setOnMousePressed(e -> {
+            if (CH_Application.getInstance().currentUser.getCoupons().isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("쿠폰 없음");
+                alert.setHeaderText(null);
+                alert.setContentText("보유 중인 쿠폰이 없습니다.");
+                alert.showAndWait();
+                return;
+            }
             ChoiceBox<String> couponChoiceBox = new ChoiceBox<>();
-            List <Coupon> coupons1 = CH_Application.getInstance().currentUser.getCoupons();
-            for(Coupon c: coupons1){
+            List<Coupon> coupons1 = CH_Application.getInstance().currentUser.getCoupons();
+            for (Coupon c : coupons1) {
                 couponChoiceBox.getItems().add(c.getName());
             }
             Button applyButton = new Button("쿠폰 적용");
             applyButton.setOnAction(ev -> {
                 String select = couponChoiceBox.getValue();
-                for(Coupon c : coupons1){
-                    if(c.getName().equals(select)){
+                for (Coupon c : coupons1) {
+                    if (c.getName().equals(select)) {
                         this.usedCoupon = c;
                         int discount = getTotalPrice() * c.getValue() / 100;
                         int finalPrice = getTotalPrice() - discount;
-                        this.totalPrice.setText("(쿠폰사용됨)할인적용금액:"+finalPrice);
+                        this.totalPrice.setText("(쿠폰사용됨)할인적용금액:" + finalPrice);
                         this.totalPriceInt = finalPrice;
                         ((Stage) applyButton.getScene().getWindow()).close(); // 창 닫기
                     }
@@ -203,7 +205,7 @@ public class Scene_Cart {
             popupStage.showAndWait();
 
         });
-        payButtons.getChildren().addAll(useCoupon,getPay);
+        payButtons.getChildren().addAll(useCoupon, getPay);
 
         bottom.setLeft(totalPrice);
         bottom.setRight(payButtons);
@@ -273,13 +275,26 @@ public class Scene_Cart {
         totalPrice.setText("총 금액: " + setTotalPrice());
     }
 
-    int setTotalPrice() {
+    String setTotalPrice() {
         List<Book> cart = CH_Application.getInstance().currentUser.getBuyList();
+        User user = CH_Application.getInstance().getCurrentUser();
         int total = 0;
+        String s = "";
         for (Book b : cart) {
             total += b.getAmount() * b.getPrice();
         }
-        return total;
+        if (user.getGrade().equals("silver")) {
+            total *= 0.95;
+            s = "silver 등급 할인 적용됨";
+        } else if (user.getGrade().equals("gold")) {
+            total *= 0.9;
+            s = "gold 등급 할인 적용됨";
+        } else if (user.getGrade().equals("vip")) {
+            total *= 0.85;
+            s = "vip 등급 할인 적용됨";
+
+        }
+        return total + "원" + "(" + s + ")";
     }
 
     // 공통 버튼 스타일
@@ -301,10 +316,11 @@ public class Scene_Cart {
         label.setFont(Font.font("Arial", bold ? FontWeight.BOLD : FontWeight.NORMAL, size));
         return label;
     }
-    int getTotalPrice(){
+
+    int getTotalPrice() {
         int total = 0;
-        for(Book b : CH_Application.getInstance().currentUser.getBuyList()){
-            total += b.getPrice()*b.getAmount();
+        for (Book b : CH_Application.getInstance().currentUser.getBuyList()) {
+            total += b.getPrice() * b.getAmount();
         }
         return total;
     }
