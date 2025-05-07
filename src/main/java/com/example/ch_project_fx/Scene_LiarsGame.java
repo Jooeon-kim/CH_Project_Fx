@@ -44,8 +44,7 @@ public class Scene_LiarsGame {
     boolean isLie = false;
 
     void startBet() {
-        URL url = getClass().getResource("/css/liarsgame.css");
-        System.out.println("CSS URL: " + url);
+
         if (this.user.getPoint() == 0) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setContentText(null);
@@ -94,8 +93,8 @@ public class Scene_LiarsGame {
         vipBox.getChildren().addAll(inputBet, userMoneyInfo, textFieldBet);
 
         small.getChildren().addAll(vipBox, vipSet);
-
-        Scene smallScene = new Scene(small, 400, 300);
+        small.setAlignment(Pos.CENTER);
+        Scene smallScene = new Scene(small, 240, 160);
         smallScene.getStylesheets().add(getClass().getResource("/css/liarsgame.css").toExternalForm());
         smallStage.setScene(smallScene);
         smallStage.show();
@@ -117,7 +116,7 @@ public class Scene_LiarsGame {
         this.player1 = player1;
 
 
-        this.player1.img = new Image(getClass().getResource("/img/liarplayer1.png").toExternalForm());
+        this.player1.img = new Image(getClass().getResource("/img/minigame/liarplayer1.png").toExternalForm());
 
 
         for (int i = 0; i < 5; i++) {
@@ -248,7 +247,7 @@ public class Scene_LiarsGame {
         if (this.winner != null) return;
         setText("라이어? or 넘기기");
 
-        PauseTransition p = new PauseTransition(Duration.seconds(0.1)); // 아주 짧은 딜레이
+        PauseTransition p = new PauseTransition(Duration.seconds(0.5)); // 아주 짧은 딜레이
         p.setOnFinished(ev -> {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -301,7 +300,7 @@ public class Scene_LiarsGame {
         this.player1Deck.getChildren().clear();
         this.userDeck.getChildren().clear();
         for (Card c : this.player1.PlayerDeck) {
-            ImageView img = new ImageView( new Image(getClass().getResource("/img/Card-back.png").toExternalForm()));
+            ImageView img = new ImageView( new Image(getClass().getResource("/img/cards/Card-back.png").toExternalForm()));
             img.setFitHeight(140);
             img.setPreserveRatio(true);
             img.setDisable(true);
@@ -396,7 +395,7 @@ public class Scene_LiarsGame {
         Label label = new Label("상대 제출카드");
         HBox element = new HBox();
         for (Card C : this.LastPlayerCard) {
-            Image img = new Image(getClass().getResource("/img/Card-back.png").toExternalForm());
+            Image img = new Image(getClass().getResource("/img/cards/Card-back.png").toExternalForm());
             ImageView img1 = new ImageView(img);
             img1.setPreserveRatio(true);
             img1.setFitHeight(100);

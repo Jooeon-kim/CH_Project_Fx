@@ -14,7 +14,7 @@ public class Scene_Login {
 
         VBox vBox = new VBox(20);
         vBox.setAlignment(Pos.CENTER);
-        String imagePath = "/img/logo.png";
+        String imagePath = "/img/bookMarket/logo.png";
         Image logo = new Image(getClass().getResource(imagePath).toExternalForm());
         ImageView img = new ImageView(logo);
         img.setFitWidth(400);

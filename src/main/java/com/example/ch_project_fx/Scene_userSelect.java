@@ -29,7 +29,7 @@ public class Scene_userSelect {
         HBox topBox = new HBox();
         topBox.setPadding(new Insets(30, 0, 20, 0));
         topBox.setAlignment(Pos.CENTER);
-        ImageView logoView = new ImageView(new Image(getClass().getResource("/img/logo.png").toExternalForm()));
+        ImageView logoView = new ImageView(new Image(getClass().getResource("/img/bookMarket/logo.png").toExternalForm()));
         logoView.setFitHeight(120);
         logoView.setPreserveRatio(true);
         logoView.setOnMousePressed(e -> {
@@ -70,18 +70,18 @@ public class Scene_userSelect {
         gridPane.setPadding(new Insets(30));
         gridPane.setAlignment(Pos.CENTER);
 
-        VBox miniGameBox = createMenuCard("/img/minigame.png", "미니게임");
+        VBox miniGameBox = createMenuCard("/img/bookMarket/minigame.png", "미니게임");
         miniGameBox.setOnMousePressed(e -> {
             Scene_Minigame SM = new Scene_Minigame();
             SM.SelectGame();
         });
-        VBox libraryBox = createMenuCard("/img/library.png", "책 대여");
+        VBox libraryBox = createMenuCard("/img/bookMarket/library.png", "책 대여");
         libraryBox.setOnMousePressed(e -> {
             Scene_Library SL = new Scene_Library();
             SL.openLibrary();
         });
 
-        VBox marketBox = createMenuCard("/img/bookmarket.png", "온라인 서점");
+        VBox marketBox = createMenuCard("/img/bookMarket/bookmarket.png", "온라인 서점");
         marketBox.setOnMousePressed(e -> {
             Scene_bookMarket BM = new Scene_bookMarket();
             BM.openMarket();
@@ -96,7 +96,7 @@ public class Scene_userSelect {
         Bottom.setPadding(new Insets(20));
         Bottom.setAlignment(Pos.CENTER);
 
-        Image image = new Image(getClass().getResource("/img/BookBot.png").toExternalForm());
+        Image image = new Image(getClass().getResource("/img/bookMarket/BookBot.png").toExternalForm());
         ImageView bookBot = new ImageView(image);
         bookBot.setPreserveRatio(true);
         bookBot.setFitHeight(200);
@@ -104,12 +104,12 @@ public class Scene_userSelect {
             Scene_ChatBot SC = new Scene_ChatBot();
             SC.runChatBot();
         });
-        Image image1 = new Image(getClass().getResource("/img/a1.jpg").toExternalForm());
-        Image image2 = new Image(getClass().getResource("/img/a2.jpg").toExternalForm());
-        Image image3 = new Image(getClass().getResource("/img/a3.jpg").toExternalForm());
-        Image image4 = new Image(getClass().getResource("/img/a4.jpg").toExternalForm());
-        Image image5 = new Image(getClass().getResource("/img/a5.jpg").toExternalForm());
-        Image image6 = new Image(getClass().getResource("/img/a6.jpg").toExternalForm());
+        Image image1 = new Image(getClass().getResource("/img/advertisement/a1.jpg").toExternalForm());
+        Image image2 = new Image(getClass().getResource("/img/advertisement/a2.jpg").toExternalForm());
+        Image image3 = new Image(getClass().getResource("/img/advertisement/a3.jpg").toExternalForm());
+        Image image4 = new Image(getClass().getResource("/img/advertisement/a4.jpg").toExternalForm());
+        Image image5 = new Image(getClass().getResource("/img/advertisement/a5.jpg").toExternalForm());
+        Image image6 = new Image(getClass().getResource("/img/advertisement/a6.jpg").toExternalForm());
 
 
         ImageView imageView = new ImageView(image1);

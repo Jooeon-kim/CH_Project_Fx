@@ -26,7 +26,7 @@ public class Scene_userInfo {
         userInfoRoot .setAlignment(Pos.TOP_CENTER);
         userInfoRoot.getStyleClass().add("root");
         // 로고 상단 중앙
-        ImageView logo = new ImageView(new Image(getClass().getResource("/img/logo.png").toExternalForm()));
+        ImageView logo = new ImageView(new Image(getClass().getResource("/img/bookMarket/logo.png").toExternalForm()));
         logo.setFitHeight(80);
         logo.setPreserveRatio(true);
         HBox logoBox = new HBox(logo);

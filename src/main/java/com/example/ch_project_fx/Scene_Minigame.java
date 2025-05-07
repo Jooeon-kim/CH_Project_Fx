@@ -35,7 +35,7 @@ public class Scene_Minigame {
     void SelectGame(){
 
         VBox main = new VBox(20);
-        Image logo = new Image(getClass().getResource("/img/logo.png").toExternalForm());
+        Image logo = new Image(getClass().getResource("/img/bookMarket/logo.png").toExternalForm());
         ImageView imageViewLogo = new ImageView(logo);
         imageViewLogo.setFitHeight(100);
         imageViewLogo.setPreserveRatio(true);
@@ -52,7 +52,7 @@ public class Scene_Minigame {
         HBox games = new HBox(20);
         games.setAlignment(Pos.CENTER);
 
-        Image BJ = new Image(getClass().getResource("/img/blackjack.png").toExternalForm());
+        Image BJ = new Image(getClass().getResource("/img/minigame/blackjack.png").toExternalForm());
         ImageView imageView2 = new ImageView(BJ);
         imageView2.setFitWidth(350);
         imageView2.setPreserveRatio(true);
@@ -69,7 +69,7 @@ public class Scene_Minigame {
             }
             this.stage.setScene(this.currentScene);
         });
-        Image Lie = new Image(getClass().getResource("/img/Liar.png").toExternalForm());
+        Image Lie = new Image(getClass().getResource("/img/minigame/Liar.png").toExternalForm());
         ImageView imageView3 = new ImageView(Lie);
         imageView3.setFitWidth(350);
         imageView3.setPreserveRatio(true);

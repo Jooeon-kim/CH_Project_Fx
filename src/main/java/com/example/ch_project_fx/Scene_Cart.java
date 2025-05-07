@@ -27,7 +27,7 @@ public class Scene_Cart {
         main.setPadding(new Insets(20));
         main.setStyle("-fx-background-color: #f4f9f9;");
 
-        Image logo = new Image(getClass().getResource("/img/logo.png").toExternalForm());
+        Image logo = new Image(getClass().getResource("/img/bookMarket/logo.png").toExternalForm());
         ImageView imageViewLogo = new ImageView(logo);
         imageViewLogo.setFitHeight(120);
         imageViewLogo.setPreserveRatio(true);
@@ -81,7 +81,7 @@ public class Scene_Cart {
         VBox userInfoVBox = new VBox(10, userInfoBox, buttons);
         userInfoVBox.setAlignment(Pos.CENTER_RIGHT);
 
-        Image bookMarketLogo = new Image(getClass().getResource("/img/bookmarketlogo.png").toExternalForm());
+        Image bookMarketLogo = new Image(getClass().getResource("/img/bookMarket/bookmarketlogo.png").toExternalForm());
         ImageView imageView = new ImageView(bookMarketLogo);
         imageView.setPreserveRatio(false);
         imageView.setFitHeight(100);

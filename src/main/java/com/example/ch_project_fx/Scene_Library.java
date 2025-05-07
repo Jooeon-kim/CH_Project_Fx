@@ -34,7 +34,7 @@ public class Scene_Library {
         main.setPadding(new Insets(20));
         main.setStyle("-fx-background-color: #f4f9f9;");
 
-        Image logo = new Image(getClass().getResource("/img/logo.png").toExternalForm());
+        Image logo = new Image(getClass().getResource("/img/bookMarket/logo.png").toExternalForm());
         ImageView imageViewLogo = new ImageView(logo);
         imageViewLogo.setFitHeight(120);
         imageViewLogo.setPreserveRatio(true);
@@ -88,7 +88,7 @@ public class Scene_Library {
         VBox userInfoVBox = new VBox(10, userInfoBox, buttons);
         userInfoVBox.setAlignment(Pos.CENTER_RIGHT);
 
-        Image bookMarketLogo = new Image(getClass().getResource("/img/librarylogo.png").toExternalForm());
+        Image bookMarketLogo = new Image(getClass().getResource("/img/bookMarket/librarylogo.png").toExternalForm());
         ImageView imageView = new ImageView(bookMarketLogo);
         imageView.setPreserveRatio(false);
         imageView.setFitHeight(100);
@@ -104,12 +104,12 @@ public class Scene_Library {
 //+++++++++++++++++++++++++++++++++++++++++++++++ 위 까지 상단 ++++++++++++++++++++++++++++++++++++++++++++
         HBox categoryButtons = new HBox(20);
         categoryButtons.setAlignment(Pos.CENTER);
-        Button Category1 = createStyledButtonCategory("카테고리1");
-        Button Category2 = createStyledButtonCategory("카테고리2");
-        Button Category3 = createStyledButtonCategory("카테고리3");
-        Button Category4 = createStyledButtonCategory("카테고리4");
-        Button Category5 = createStyledButtonCategory("카테고리5");
-        Button Category6 = createStyledButtonCategory("카테고리6");
+        Button Category1 = createStyledButtonCategory("생활지식");
+        Button Category2 = createStyledButtonCategory("요리");
+        Button Category3 = createStyledButtonCategory("만화");
+        Button Category4 = createStyledButtonCategory("아동");
+        Button Category5 = createStyledButtonCategory("프로그래밍");
+
 
         HBox searchBox = new HBox(20);
         ChoiceBox<String> choiceBox = new ChoiceBox<>();
@@ -136,7 +136,7 @@ public class Scene_Library {
 
             }
         });
-        categoryButtons.getChildren().addAll(Category1,Category2,Category3,Category4,Category5,Category6);
+        categoryButtons.getChildren().addAll(Category1,Category2,Category3,Category4,Category5);
         searchBox.getChildren().addAll(choiceBox,inputSearch);
         //++++++++++++++++++++++++++++++++  위는 검색기능 박스 +++++++++++++++++++++++++++++++++++++++++++++
         HBox middle = new HBox(20);
