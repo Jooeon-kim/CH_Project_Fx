@@ -52,6 +52,8 @@ public class Scene_ChatBot {
             String normalizedInput = userInput.replaceAll("\\s+", "");
             setUserText(user, userInput);
             inputField.clear();
+
+            // 일상
             if (normalizedInput.contains("안녕") || normalizedInput.contains("반가워") || normalizedInput.contains("하이") || normalizedInput.contains("ㅎㅇ") || normalizedInput.contains("hello")) {
                 String[] hello = {user.getName() + "님! 저도 반가워요", user.getName() + "님 안녕안녕! > . < ", "안녕하세요" + user.getName() + "님!"};
                 String[] niceToMeetYou = {"독서하기 좋은날이네요!", "점심 맛있게 드셨나요", "프로젝트 기간동안 화이팅!"};
@@ -69,7 +71,7 @@ public class Scene_ChatBot {
 
             }
             if (normalizedInput.contains("날씨") || normalizedInput.contains("오늘날씨") || normalizedInput.contains("지금날씨") || normalizedInput.contains("현재날씨")) {
-                String[] weather = {"오늘의 날씨는 대체로 맑으며 평균 기온은 19'C 입니다.\n"};
+                String[] weather = {"오늘의 날씨는 대체로 맑으며 평균 기온은 19'C 입니다."};
                 setBotText(weather[random.nextInt(weather.length)]);
             }
             if (normalizedInput.contains("쿠폰") || normalizedInput.contains("보유쿠폰") || normalizedInput.contains("쿠폰번호") || normalizedInput.contains("할인쿠폰")) {
@@ -81,40 +83,58 @@ public class Scene_ChatBot {
                 setBotTextRapid(couponList);
                 setBotTextRapid("보유하신 쿠폰이 있다면 쿠폰번호를 입력해주세요.");
             }
+
+            // 쿠폰
             if (userInput.contains("AAA6451") || userInput.contains("BBB7678") || userInput.contains("CCC0455") || userInput.contains("DDD8451")) {
                 String couponName = "";
                 switch (userInput) {
                     case "AAA6451":
                         cd.giveCouponToUser(user.getId(), 1);
                         couponName = cd.getAllCoupons().get(0).getName();
+                        showCouponImage(1);
                         break;
                     case "BBB7678":
                         cd.giveCouponToUser(user.getId(), 2);
                         couponName = cd.getAllCoupons().get(1).getName();
+                        showCouponImage(2);
                         break;
                     case "CCC0455":
                         cd.giveCouponToUser(user.getId(), 3);
                         couponName = cd.getAllCoupons().get(2).getName();
+                        showCouponImage(3);
                         break;
                     case "DDD8451":
                         cd.giveCouponToUser(user.getId(), 1);
                         couponName = cd.getAllCoupons().get(3).getName();
+                        showCouponImage(1);
                         break;
                 }
-                setBotText("쿠폰 정보가 확인되었습니다.\n" + couponName + "\n" + "1장이 지급 되었습니다.");
                 CH_Application.getInstance().setCurrentUser(ud.login(user.getId(), user.getPw()));
             }
+
+            // 도서
             if (normalizedInput.contains("베스트") || normalizedInput.contains("잘팔린") || normalizedInput.contains("책추천") || normalizedInput.contains("뭐사지")) {
                 setBotText("제가 추천드리는 도서는 " + bestSeller.get(0).getTitle() + " 입니다! 최근들어 가장 많이 팔린 상품이네요!");
-                buyBookLink( bestSeller.get(0).getIsbn());
+                buyBookLink(bestSeller.get(0).getIsbn());
             } else if (normalizedInput.contains("그다음") || normalizedInput.contains("두번째")) {
-                setBotText("그다음 추천 도서는 " + bestSeller.get(1).getTitle() + " 입니다! 요즘 소비자분들이 많이 찾으세요~!");
+                setBotText("두번째 추천 도서는 " + bestSeller.get(1).getTitle() + " 입니다! 요즘 소비자분들이 많이 찾으세요!");
+                buyBookLink(bestSeller.get(1).getIsbn());
             } else if (normalizedInput.contains("뭐읽지") || normalizedInput.contains("아무거나") || normalizedInput.contains("랜덤") || normalizedInput.contains("흠")) {
-                setBotText("어떤 책을 읽으실지 고민인가요? 제가 하나 추천해드릴게요! " + books.get(random.nextInt(books.size())).getTitle() + " 한번 읽어보세요!");
+                Book finded = books.get(random.nextInt(books.size()));
+                setBotText("어떤 책을 읽으실지 고민인가요? 제가 하나 추천해드릴게요! " + finded.getTitle() + " 한번 읽어보세요!");
+                buyBookLink(finded.getIsbn());
             }
+
+            if (normalizedInput.contains("책검색") || normalizedInput.contains("책정보") || normalizedInput.contains("책검색하기")) {
+
+            }
+
+            // 등급
             if (normalizedInput.contains("등급")) {
                 setBotText("회원등급은 총 구매금액이 5만원이상 시 silver ,10만원 이상 일 시 gold, 30만원 이상 일 시 vip 입니다! 현재 회원님은 " + user.getGrade() + "(이) 네요!");
             }
+
+            // 게임
             if (normalizedInput.contains("라이어게임")) {
                 setBotText("A, K, Q 중 랜덤으로 랭크 하나가 제시됩니다\n" +
                         "                \n" +
@@ -228,32 +248,65 @@ public class Scene_ChatBot {
         }
     }
 
-    void buyBookLink(String isbn){
+    void buyBookLink(String isbn) {
         PauseTransition p1 = new PauseTransition(Duration.seconds(2));
-        p1.setOnFinished(e->{
+        p1.setOnFinished(e -> {
             Book userFind = null;
-            for(Book b : this.books){
-                if(b.getIsbn().equals(isbn)){
+            for (Book b : this.books) {
+                if (b.getIsbn().equals(isbn)) {
                     userFind = b;
                     break;
                 }
             }
             Book Copy = userFind;
-            Label bookName = new Label("제목: "+userFind.getTitle());
-            Label price = new Label("가격: "+userFind.getPrice());
-            Label category = new Label("카테고리: "+userFind.getCategory());
+            Label bookName = new Label("제목: " + userFind.getTitle());
+            bookName.setWrapText(true);
+            Label price = new Label("가격: " + userFind.getPrice());
+            Label category = new Label("카테고리: " + userFind.getCategory());
             ImageView imageView = new ImageView(userFind.getImage());
-            imageView.setFitHeight(80);
+            imageView.setFitHeight(150);
             imageView.setPreserveRatio(true);
+            HBox input = new HBox(10);
             VBox element = new VBox(10);
+            VBox click = new VBox(0);
+            Label clickLabel = new Label("책 클릭시 구매 👉");
+            clickLabel.setAlignment(Pos.CENTER);
+            click.getChildren().add(clickLabel);
+            click.setAlignment(Pos.CENTER);
+
+            element.setMaxWidth(200);
             element.setAlignment(Pos.TOP_LEFT);
-            element.setOnMousePressed(i->{
+            element.setOnMousePressed(i -> {
                 this.user.getBuyList().add(Copy.CopyBookForCart(Copy));
                 Scene_Cart sc = new Scene_Cart();
                 sc.userCart();
             });
-            element.getChildren().addAll(bookName,price,category,imageView);
-            chatBox.getChildren().add(element);
+            element.getChildren().addAll(bookName, price, category, imageView);
+            element.setStyle("-fx-background-color: lightblue; -fx-padding: 10; -fx-background-radius: 10;");
+
+            input.setAlignment(Pos.TOP_RIGHT);
+            input.getChildren().addAll(click, element);
+            chatBox.getChildren().add(input);
+        });
+        p1.play();
+    }
+
+    void showCouponImage(int couponId) {
+        String couponName = "";
+        PauseTransition p1 = new PauseTransition(Duration.seconds(2));
+        p1.setOnFinished(e -> {
+            ImageView imageView = new ImageView(coupons.get(couponId - 1).getImage());
+            imageView.setPreserveRatio(true);
+            imageView.setFitHeight(30);
+            VBox input1 = new VBox(10);
+            VBox input2 = new VBox(10);
+            input1.setAlignment(Pos.CENTER);
+            input1.getChildren().add(imageView);
+            chatBox.getChildren().add(input1);
+
+            input2.setAlignment(Pos.TOP_LEFT);
+            setBotText("쿠폰 정보가 확인되었습니다.\n" + couponName + "\n" + "1장이 지급 되었습니다.");
+
         });
         p1.play();
     }
