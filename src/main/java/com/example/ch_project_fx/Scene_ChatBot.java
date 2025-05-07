@@ -15,10 +15,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class Scene_ChatBot {
 
@@ -74,6 +71,8 @@ public class Scene_ChatBot {
                 String[] weather = {"오늘의 날씨는 대체로 맑으며 평균 기온은 19'C 입니다."};
                 setBotText(weather[random.nextInt(weather.length)]);
             }
+
+            // 쿠폰
             if (normalizedInput.contains("쿠폰") || normalizedInput.contains("보유쿠폰") || normalizedInput.contains("쿠폰번호") || normalizedInput.contains("할인쿠폰")) {
                 List<Coupon> userCoupons = user.getCoupons();
                 String couponList = "현재 보유중인 쿠폰 목록입니다.\n\n";
@@ -82,10 +81,7 @@ public class Scene_ChatBot {
                 }
                 setBotTextRapid(couponList);
                 setBotTextRapid("보유하신 쿠폰이 있다면 쿠폰번호를 입력해주세요.");
-            }
-
-            // 쿠폰
-            if (userInput.contains("AAA6451") || userInput.contains("BBB7678") || userInput.contains("CCC0455") || userInput.contains("DDD8451")) {
+            } else if (userInput.contains("AAA6451") || userInput.contains("BBB7678") || userInput.contains("CCC0455") || userInput.contains("DDD8451")) {
                 String couponName = "";
                 switch (userInput) {
                     case "AAA6451":
@@ -108,6 +104,9 @@ public class Scene_ChatBot {
                         couponName = cd.getAllCoupons().get(3).getName();
                         showCouponImage(1);
                         break;
+                    default:
+                        setBotTextRapid("유효하지 않은 쿠폰 번호입니다. 다시 입력해주세요.");
+                        return; // 잘못된 번호면 상태 유지
                 }
                 CH_Application.getInstance().setCurrentUser(ud.login(user.getId(), user.getPw()));
             }
@@ -125,8 +124,14 @@ public class Scene_ChatBot {
                 buyBookLink(finded.getIsbn());
             }
 
-            if (normalizedInput.contains("책검색") || normalizedInput.contains("책정보") || normalizedInput.contains("책검색하기")) {
-
+            if (userInput.contains("책검색") || userInput.contains("책정보") || userInput.contains("책검색하기")) {
+                String[] arr = userInput.split(" ");
+                String search = arr[1];
+                for (Book b : this.books) {
+                    if (b.getTitle().contains(search) || b.getCategory().contains(search)) {
+                        setBotTextRapid(b.getTitle() + b.getCategory());
+                    }
+                }
             }
 
             // 등급
@@ -292,23 +297,32 @@ public class Scene_ChatBot {
     }
 
     void showCouponImage(int couponId) {
-        String couponName = "";
         PauseTransition p1 = new PauseTransition(Duration.seconds(2));
         p1.setOnFinished(e -> {
             ImageView imageView = new ImageView(coupons.get(couponId - 1).getImage());
             imageView.setPreserveRatio(true);
-            imageView.setFitHeight(30);
+            imageView.setFitHeight(70);
             VBox input1 = new VBox(10);
+
             VBox input2 = new VBox(10);
-            input1.setAlignment(Pos.CENTER);
+            input1.setAlignment(Pos.TOP_RIGHT);
             input1.getChildren().add(imageView);
-            chatBox.getChildren().add(input1);
 
-            input2.setAlignment(Pos.TOP_LEFT);
-            setBotText("쿠폰 정보가 확인되었습니다.\n" + couponName + "\n" + "1장이 지급 되었습니다.");
 
+            Label info = new Label("쿠폰 정보가 확인되었습니다.\n" + coupons.get(couponId - 1).getName() + "1장이 지급 되었습니다.");
+            info.setStyle("-fx-background-color: lightblue; -fx-padding: 10; -fx-background-radius: 10;");
+            info.setWrapText(true);
+            input2.getChildren().add(info);
+            input2.setAlignment(Pos.TOP_RIGHT);
+
+            VBox element = new VBox(10);
+            element.setAlignment(Pos.TOP_RIGHT);
+
+            element.getChildren().addAll(input2, input1);
+            chatBox.getChildren().add(element);
         });
         p1.play();
     }
+
 }
 
