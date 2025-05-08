@@ -75,7 +75,7 @@ public class Scene_ChatBot {
             // 쿠폰
             if (normalizedInput.contains("쿠폰") || normalizedInput.contains("보유쿠폰") || normalizedInput.contains("쿠폰번호") || normalizedInput.contains("할인쿠폰")) {
                 List<Coupon> userCoupons = user.getCoupons();
-                String couponList = "현재 보유중인 쿠폰 목록입니다.\n\n";
+                String couponList = "현재 보유중인 쿠폰 목록입니다.\n";
                 for (Coupon c : userCoupons) {
                     couponList += "<" + c.getName() + ">" + "\n";
                 }
@@ -95,9 +95,9 @@ public class Scene_ChatBot {
                         showCouponImage(2);
                         break;
                     case "CCC0455":
-                        cd.giveCouponToUser(user.getId(), 3);
+                        cd.giveCouponToUser(user.getId(), 2);
                         couponName = cd.getAllCoupons().get(2).getName();
-                        showCouponImage(3);
+                        showCouponImage(2);
                         break;
                     case "DDD8451":
                         cd.giveCouponToUser(user.getId(), 1);
@@ -317,6 +317,12 @@ public class Scene_ChatBot {
 
             VBox element = new VBox(10);
             element.setAlignment(Pos.TOP_RIGHT);
+            element.setOnMousePressed(i->{
+                UserDAO UD= new UserDAO();
+
+                Scene_userInfo SU = new Scene_userInfo();
+                CH_Application.getInstance().stage.setScene(SU.getUserInfoScene(UD.login(user.getId(), user.getPw())));
+            });
 
             element.getChildren().addAll(input2, input1);
             chatBox.getChildren().add(element);
