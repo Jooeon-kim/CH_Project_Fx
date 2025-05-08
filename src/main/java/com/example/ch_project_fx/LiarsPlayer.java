@@ -133,14 +133,14 @@ public class LiarsPlayer implements Liars{
     }
 
     public boolean StrikeLiar(List<Card> LastPlayerCard) {
-
+        int validCount = 0;
         for (Card c : LastPlayerCard) {
-            if (!c.getRank().equals(this.mainRank) && !c.getRank().equals("Joker")) {
-                return true; // 하나라도 다르면 거짓말
+            if (c.getRank().equals(this.mainRank) || c.getRank().equals("Joker")) {
+                validCount++;
             }
         }
-
-        return false; // 전부 다 같으면 진실
+        // 모든 카드가 mainRank 또는 joker로 이루어져 있으면 정직
+        return validCount < LastPlayerCard.size(); // 하나라도 다르면 → 거짓말(true)
     }
 
     public void setRandomStrategy() {

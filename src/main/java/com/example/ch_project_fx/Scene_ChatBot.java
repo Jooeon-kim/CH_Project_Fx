@@ -95,9 +95,9 @@ public class Scene_ChatBot {
                         showCouponImage(2);
                         break;
                     case "CCC0455":
-                        cd.giveCouponToUser(user.getId(), 2);
+                        cd.giveCouponToUser(user.getId(), 3);
                         couponName = cd.getAllCoupons().get(2).getName();
-                        showCouponImage(2);
+                        showCouponImage(3);
                         break;
                     case "DDD8451":
                         cd.giveCouponToUser(user.getId(), 1);

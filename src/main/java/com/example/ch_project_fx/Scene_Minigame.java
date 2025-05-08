@@ -58,7 +58,7 @@ public class Scene_Minigame {
         imageView2.setPreserveRatio(true);
         imageView2.setOnMousePressed(e->{
             BlackJack();
-            if(this.currentUser.getPoint()<=0){
+            if(this.currentUser.getPoint()<0){
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.initOwner(this.stage);
                 alert.setTitle("포인트가 없네요!?");
@@ -75,7 +75,7 @@ public class Scene_Minigame {
         imageView3.setPreserveRatio(true);
         imageView3.setOnMousePressed(e->{
             Scene_LiarsGame LG = new Scene_LiarsGame();
-            if(this.currentUser.getPoint()<=0){
+            if(this.currentUser.getPoint()<0){
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.initOwner(this.stage);
                 alert.setTitle("포인트가 없네요!?");
